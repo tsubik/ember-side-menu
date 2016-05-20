@@ -38,9 +38,34 @@ $side-menu-divider-bg: #e5e5e5;
   }
 }
 
-.side-menu-toggle {
-  .toggle-bars {
+@mixin toggle-bar {
+  content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
 
+.side-menu-toggle {
+  width: 50px;
+  height: 50px;
+  margin: 10px 25px 0 0;
+  cursor: pointer;
+
+  span.toggle-bars {
+    @include toggle-bar;
+
+    &:before {
+      @include toggle-bar;
+      top: 15px;
+    }
+
+    &:after {
+      @include toggle-bar;
+      top: -17px;
+    }
   }
 }
 
