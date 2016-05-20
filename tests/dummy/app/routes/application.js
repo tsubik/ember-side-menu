@@ -6,8 +6,8 @@ export default Ember.Route.extend({
             options: [
                 { id: "slide", text: "Slide" },
                 { id: "stack", text: "Stack" },
-                { id: "elastic", text: "Elastic" }
-            ]
+                { id: "elastic", text: "Elastic" },
+            ],
         };
     },
 
@@ -20,6 +20,6 @@ export default Ember.Route.extend({
         changeMenu(option) {
             const controller = this.controllerFor("application");
             controller.set("activeOption", option);
-        }
-    }
+        },
+    },
 });

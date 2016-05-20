@@ -2,7 +2,7 @@ import Ember from "ember";
 import layout from "../templates/components/menu-style-option";
 
 export default Ember.Component.extend({
-    layout: layout,
+    layout,
     tagName: "a",
     classNameBindings: ["isActive:current-demo"],
 
@@ -16,5 +16,5 @@ export default Ember.Component.extend({
     click() {
         const option = this.get("option");
         this.sendAction("action", option);
-    }
+    },
 });
