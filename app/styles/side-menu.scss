@@ -34,31 +34,13 @@ $side-menu-divider-bg: #e5e5e5;
         font-weight: bold;
         text-transform: uppercase;
       }
-
-      a {
-        text-decoration: none;
-        display: block;
-        color: $side-menu-link-color;
-
-        &.active {
-          background-color: $side-menu-link-bg-active;
-        }
-
-        svg, span {
-          margin: 0px 10px 0px 0px;
-          float: left;
-          display: block;
-          width: 32px;
-          height: 32px;
-          font-size: 24px;
-
-          &.glyphicon {
-            top: 0px;
-            line-height: 32px;
-          }
-        }
-      }
     }
+  }
+}
+
+.side-menu-toggle {
+  .toggle-bars {
+
   }
 }
 
@@ -67,14 +49,14 @@ $side-menu-divider-bg: #e5e5e5;
 }
 
 .content-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: $content-backdrop-z-index;
-    background-color: $content-backdrop-bg;
-    opacity: 0;
-    visibility: hidden;
-    will-change: opacity;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $content-backdrop-z-index;
+  background-color: $content-backdrop-bg;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
 }

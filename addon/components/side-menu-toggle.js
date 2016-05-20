@@ -4,7 +4,7 @@ export default Ember.Component.extend({
     sideMenu: Ember.inject.service(),
 
     tagName: "button",
-    classNames: ["navbar-btn", "btn", "btn-link", "pull-left"],
+    classNames: ["side-menu-toggle"],
 
     click() {
         this.get("sideMenu").toggle();

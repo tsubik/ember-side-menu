@@ -10,6 +10,17 @@ export default Ember.Component.extend({
     attributeBindings: ["style"],
     classNames: ["side-menu"],
 
+    style: Ember.computed("progress", function () {
+        const progress = this.get("progress");
+        const transition = (progress === 0 || progress === 100)
+                  ? "transform 0.2s ease-out"
+                  : "none";
+
+        return new Ember.Handlebars.SafeString(
+            `transform: translateX(${progress}%); transition: ${transition}`
+        );
+    }),
+
     disableScroll: Ember.on("init", Ember.observer("isClosed", function () {
         const isClosed = this.get("isClosed");
         const wasClosed = this.get("wasClosed");
@@ -27,17 +38,6 @@ export default Ember.Component.extend({
 
         this.set("wasClosed", isClosed);
     })),
-
-    style: Ember.computed("progress", function () {
-        const progress = this.get("progress");
-        const transition = (progress === 0 || progress === 100)
-                  ? "transform 0.2s ease-out"
-                  : "none";
-
-        return new Ember.Handlebars.SafeString(
-            `transform: translateX(${progress}%); transition: ${transition}`
-        );
-    }),
 
     didInsertElement() {
         this._super(...arguments);
@@ -84,7 +84,7 @@ export default Ember.Component.extend({
             this.completeMenuTransition(event);
         });
 
-        if (this.mustTrack(event)) {
+        if (this.needToTrack(event)) {
             this.set("touchStartEvent", event);
             if (isOpen) {
                 this.set("offset", Math.max(0, this.element.offsetWidth - pageX));
@@ -114,17 +114,17 @@ export default Ember.Component.extend({
             event.changedTouches[0].pageX,
             event.timeStamp
         );
-        const swipeLeft = velocityX > 0.3;
-        const swipeRight = velocityX < -0.3;
+        const isSwipingLeft = velocityX > 0.3;
+        const isSwipingRight = velocityX < -0.3;
 
-        if (!swipeRight && (swipeLeft || progress < 50)) {
+        if (!isSwipingRight && (isSwipingLeft || progress < 50)) {
             this.get("sideMenu").hide();
-        } else if (!swipeLeft && (progress >= 50 || swipeRight)) {
+        } else if (!isSwipingLeft && (progress >= 50 || isSwipingRight)) {
             this.get("sideMenu").show();
         }
     },
 
-    mustTrack(event) {
+    needToTrack(event) {
         return this.get("isOpen") || event.touches[0].pageX < 40;
     },
 

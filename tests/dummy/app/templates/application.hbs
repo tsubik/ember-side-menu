@@ -1,3 +1,42 @@
-<h2 id="title">Welcome to Ember</h2>
+{{#side-menu}}
+  <header>
+    Side menu
+  </header>
+  <ul class="nav">
+    <li class="header">Events</li>
+    <li class="divider"></li>
+    <li>
+      <a>Favorites</a>
+      <a>Alerts</a>
+      <a>Messages</a>
+      <a>Comments</a>
+    </li>
+  </ul>
+{{/side-menu}}
+{{content-backdrop}}
 
-{{outlet}}
+<div id="outer-container">
+  {{#side-menu-toggle}}
+
+  {{/side-menu-toggle}}
+
+  <main id="page-wrap">
+    <h1><a href="https://github.com/tsubik/ember-side-menu">ember-side-menu</a></h1>
+    <a class="side-button left active">Left</a>
+    <a class="side-button right">Right</a>
+
+    <h2 class="description">
+      An off-canvas sidebar Ember component with a collection of effects and styles using CSS transitions and SVG path animations.
+    </h2>
+
+    <nav class="demo-buttons">
+      {{#each model.options as |option|}}
+        {{menu-style-option option=option activeOption=activeOption action="changeMenu"}}
+      {{/each}}
+    </nav>
+
+    <p>
+      Inspired by
+    </p>
+  </main>
+</div>

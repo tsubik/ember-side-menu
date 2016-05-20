@@ -1,1 +1,9 @@
-<span class="glyphicon glyphicon-menu-hamburger"></span>
+{{#if hasBlock}}
+  {{yield}}
+{{else}}
+  <span>
+    <span class="toggle-bars"></span>
+    <span class="toggle-bars"></span>
+    <span class="toggle-bars"></span>
+  </span>
+{{/if}}
