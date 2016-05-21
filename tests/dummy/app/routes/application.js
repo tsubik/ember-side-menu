@@ -5,8 +5,6 @@ export default Ember.Route.extend({
         return {
             options: [
                 { id: "slide", text: "Slide" },
-                { id: "stack", text: "Stack" },
-                { id: "elastic", text: "Elastic" },
             ],
         };
     },

@@ -120,32 +120,12 @@ h1 {
   }
 }
 
-//
-// Burger menu custom styles
-//
-.side-menu-toggle {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
-}
-
-.right .bm-burger-button {
-  left: initial;
-  right: 36px;
-}
-
-.toggle-bars {
-  background: #373a47;
-}
-
-.bm-morph-shape {
-  fill: #373a47;
-}
-
 .side-menu {
   background: #373a47;
+
+  nav {
+    height: 100%;
+  }
 
   a {
     color: #b8b7ad;
@@ -157,8 +137,10 @@ h1 {
   }
 }
 
-.bm-item-list a {
+.sm-item-list a {
   padding: 0.8em;
+  display: block;
+  outline: none;
 
   span {
     margin-left: 10px;
