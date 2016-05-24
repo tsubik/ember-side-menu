@@ -8,13 +8,14 @@ html {
 }
 
 body {
+  margin: 0;
   height: 100%;
   background: #444;
   color: #fffce1;
   font-family: 'Raleway', Arial, sans-serif;
 }
 
-#app {
+body > .ember-view, #outer-container {
   height: 100%;
 }
 
@@ -104,6 +105,14 @@ h1 {
   }
 }
 
+.side-menu-toggle {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+}
+
 @media screen and (max-width: 40em) {
   main {
     font-size: 80%;
@@ -122,6 +131,7 @@ h1 {
 
 .side-menu {
   background: #373a47;
+  padding: 20px;
 
   nav {
     height: 100%;
