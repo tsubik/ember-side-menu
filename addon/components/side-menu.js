@@ -10,14 +10,36 @@ export default Ember.Component.extend({
     attributeBindings: ["style"],
     classNames: ["side-menu"],
 
-    style: Ember.computed("progress", function () {
+    side: "left",
+    widthStyle: Ember.computed("width", "side", function () {
+        const width = this.get("width");
+        const side = this.get("side");
+
+        if (width) {
+            if (side === "left") {
+                return `width: ${width}; right: initial; left: -${width};`;
+            } else {
+                return `width: ${width}; left: initial; right: -${width};`;
+            }
+        }
+
+        return "";
+    }),
+
+    style: Ember.computed("progress", "side", function () {
         const progress = this.get("progress");
         const transition = (progress === 0 || progress === 100)
                   ? "transform 0.2s ease-out"
                   : "none";
+        const widthStyle = this.get("widthStyle");
+        const direction = this.get("side") === "left" ? "" : "-";
 
         return new Ember.Handlebars.SafeString(
-            `transform: translateX(${progress}%); transition: ${transition}`
+            `
+transform: translateX(${direction}${progress}%);
+transition: ${transition};
+${widthStyle}
+`
         );
     }),
 
