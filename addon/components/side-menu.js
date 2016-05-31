@@ -10,8 +10,10 @@ export default Ember.Component.extend({
     attributeBindings: ["style"],
     classNames: ["side-menu"],
 
+    //default values
     side: "left",
-    widthStyle: Ember.computed("width", "side", function () {
+
+    positionStyle: Ember.computed("width", "side", function () {
         const width = this.get("width");
         const side = this.get("side");
 
@@ -26,20 +28,30 @@ export default Ember.Component.extend({
         return "";
     }),
 
-    style: Ember.computed("progress", "side", function () {
+    transitionStyle: Ember.computed("progress", function () {
         const progress = this.get("progress");
-        const transition = (progress === 0 || progress === 100)
-                  ? "transform 0.2s ease-out"
-                  : "none";
-        const widthStyle = this.get("widthStyle");
-        const direction = this.get("side") === "left" ? "" : "-";
+        return (progress === 0 || progress === 100)
+                  ? "transition: transform 0.2s ease-out;"
+                  : "transition: none;";
+    }),
+
+    transformStyle: Ember.computed("progress", "side", function () {
+        let progress = this.get("progress");
+
+        if (this.get("side") === "right") {
+            progress = -progress;
+        }
+
+        return `transform: translateX(${progress}%);`;
+    }),
+
+    style: Ember.computed("widthStyle", "transitionStyle", "transformStyle", function () {
+        const transformStyle = this.get("transformStyle");
+        const transitionStyle = this.get("transitionStyle");
+        const positionStyle = this.get("positionStyle");
 
         return new Ember.Handlebars.SafeString(
-            `
-transform: translateX(${direction}${progress}%);
-transition: ${transition};
-${widthStyle}
-`
+            `${transformStyle}${transitionStyle}${positionStyle}`
         );
     }),
 
@@ -88,8 +100,6 @@ ${widthStyle}
     },
 
     rootNodeTouch() {
-        const isOpen = this.get("isOpen");
-        const pageX = event.touches[0].pageX;
         const rootNode = this.get("rootNode");
         const onTouchMove = (event) => {
             event.preventDefault();
@@ -98,7 +108,6 @@ ${widthStyle}
         const throttledOnTouchMove = (event) => {
             Ember.run.throttle(this, onTouchMove, event, 10);
         };
-
         const onTouchEnd = Ember.run.bind(this, (event) => {
             rootNode.removeEventListener("touchmove", throttledOnTouchMove);
             rootNode.removeEventListener("touchend", onTouchEnd);
@@ -108,21 +117,38 @@ ${widthStyle}
 
         if (this.needToTrack(event)) {
             this.set("touchStartEvent", event);
-            if (isOpen) {
-                this.set("offset", Math.max(0, this.element.offsetWidth - pageX));
-            } else {
-                this.set("offset", 0);
-            }
+
+            this.setTouchOffset(event);
 
             rootNode.addEventListener("touchmove", throttledOnTouchMove);
             rootNode.addEventListener("touchend", onTouchEnd);
         }
     },
 
+    setTouchOffset(event) {
+        const isOpen = this.get("isOpen");
+        const pageX = event.touches[0].pageX;
+        const side = this.get("side");
+
+        if (isOpen) {
+            if (side === "left") {
+                this.set("touchOffset", Math.max(0, this.element.offsetWidth - pageX));
+            } else {
+                this.set("touchOffset", Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX)));
+            }
+
+            console.log(this.get("touchOffset"));
+        } else {
+            this.set("touchOffset", 0);
+        }
+    },
+
     updateProgress(touchPageX) {
         const elementWidth = this.element.offsetWidth;
-        const offset = this.get("offset");
-        const progress = Math.min((touchPageX + offset) / elementWidth * 100, 100);
+        const touchOffset = this.get("touchOffset");
+        const side = this.get("side");
+        const relativeX = side === "left" ? touchPageX : window.innerWidth - touchPageX;
+        const progress = Math.min((relativeX + touchOffset) / elementWidth * 100, 100);
 
         this.set("progress", progress);
     },
@@ -130,24 +156,37 @@ ${widthStyle}
     completeMenuTransition(event) {
         const progress = this.get("progress");
         const touchStartEvent = this.get("touchStartEvent");
+        const side = this.get("side");
         const velocityX = this.calculateVelocityX(
             touchStartEvent.touches[0].pageX,
             touchStartEvent.timeStamp,
             event.changedTouches[0].pageX,
             event.timeStamp
         );
+        const minClosingVelocity = 0.3;
+        const autoCompleteThreshold = 50;
         const isSwipingLeft = velocityX > 0.3;
         const isSwipingRight = velocityX < -0.3;
 
-        if (!isSwipingRight && (isSwipingLeft || progress < 50)) {
+        const isClosingMovement = (side === "left" && isSwipingLeft) ||
+                  (side === "right" && isSwipingRight);
+        const isOpeningMovement = (side === "left" && isSwipingRight) ||
+                  (side === "right" && isSwipingLeft);
+
+        if (isClosingMovement || progress < autoCompleteThreshold) {
             this.get("sideMenu").hide();
-        } else if (!isSwipingLeft && (progress >= 50 || isSwipingRight)) {
+        } else if (isOpeningMovement || progress >= autoCompleteThreshold) {
             this.get("sideMenu").show();
         }
     },
 
     needToTrack(event) {
-        return this.get("isOpen") || event.touches[0].pageX < 40;
+        const side = this.get("side");
+        const pageX = event.touches[0].pageX;
+
+        return this.get("isOpen") ||
+            (side === "left" && pageX < 40) ||
+            (side === "right" && pageX > window.innerWidth - 40);
     },
 
     calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
