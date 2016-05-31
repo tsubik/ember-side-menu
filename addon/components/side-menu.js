@@ -136,8 +136,6 @@ export default Ember.Component.extend({
             } else {
                 this.set("touchOffset", Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX)));
             }
-
-            console.log(this.get("touchOffset"));
         } else {
             this.set("touchOffset", 0);
         }

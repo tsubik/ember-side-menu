@@ -109,8 +109,15 @@ h1 {
   position: fixed;
   width: 36px;
   height: 30px;
-  left: 36px;
   top: 36px;
+
+  &.left {
+    left: 36px;
+  }
+
+  &.right {
+    right: 36px;
+  }
 }
 
 @media screen and (max-width: 40em) {
