@@ -10,7 +10,6 @@ export default Ember.Component.extend({
     attributeBindings: ["style"],
     classNames: ["side-menu"],
 
-    //default values
     side: "left",
 
     positionStyle: Ember.computed("width", "side", function () {
@@ -20,9 +19,9 @@ export default Ember.Component.extend({
         if (width) {
             if (side === "left") {
                 return `width: ${width}; right: initial; left: -${width};`;
-            } else {
-                return `width: ${width}; left: initial; right: -${width};`;
             }
+
+            return `width: ${width}; left: initial; right: -${width};`;
         }
 
         return "";
@@ -134,7 +133,10 @@ export default Ember.Component.extend({
             if (side === "left") {
                 this.set("touchOffset", Math.max(0, this.element.offsetWidth - pageX));
             } else {
-                this.set("touchOffset", Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX)));
+                this.set(
+                    "touchOffset",
+                    Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX))
+                );
             }
         } else {
             this.set("touchOffset", 0);
@@ -163,8 +165,8 @@ export default Ember.Component.extend({
         );
         const minClosingVelocity = 0.3;
         const autoCompleteThreshold = 50;
-        const isSwipingLeft = velocityX > 0.3;
-        const isSwipingRight = velocityX < -0.3;
+        const isSwipingLeft = velocityX > minClosingVelocity;
+        const isSwipingRight = velocityX < -minClosingVelocity;
 
         const isClosingMovement = (side === "left" && isSwipingLeft) ||
                   (side === "right" && isSwipingRight);

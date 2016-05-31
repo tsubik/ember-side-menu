@@ -1,7 +1,7 @@
 @import url("http://fonts.googleapis.com/css?family=Raleway:400,700,800");
 @import "side-menu";
 
-*, *:after, *:before { -webkit-box-sizing: border-box; box-sizing: border-box; }
+*, *:after, *:before { box-sizing: border-box; }
 
 html {
   height: 100%;
@@ -12,7 +12,7 @@ body {
   height: 100%;
   background: #444;
   color: #fffce1;
-  font-family: 'Raleway', Arial, sans-serif;
+  font-family: "Raleway", Arial, sans-serif;
 }
 
 body > .ember-view, #outer-container {
@@ -165,10 +165,7 @@ h1 {
   }
 }
 
-//
-// Mixins
-//
-@mixin menu-1 {
+#slide {
   .bm-cross {
     background: #bdc3c7;
   }
@@ -177,107 +174,4 @@ h1 {
     padding: 2.5em 1.5em 0;
     font-size: 1.15em;
   }
-}
-
-@mixin menu-2 {
-  .bm-cross {
-    background: #999;
-  }
-
-  .bm-menu {
-    padding: 3.4em 1em 0;
-  }
-
-  a {
-    padding: 1em;
-  }
-
-  i {
-    font-size: 1.7em;
-    vertical-align: middle;
-    color: #282a35;
-  }
-}
-
-@mixin menu-3 {
-  .bm-cross {
-    background: #888;
-  }
-
-  .bm-menu {
-    padding: 2em 1em;
-    font-size: 1.15em;
-  }
-
-  i {
-    opacity: 0.5;
-  }
-
-  span {
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.75em;
-  }
-}
-
-@mixin menu-4 {
-  .bm-cross {
-    background: #888;
-  }
-
-  h2 {
-    margin: 0 auto;
-    padding: 2em 1em;
-    color: rgba(0, 0, 0, 0.4);
-    box-shadow: inset 0 -1px rgba(0, 0, 0, 0.2);
-
-    i {
-      margin-left: 0.2em;
-    }
-
-    span {
-      font-size: 1.6em;
-      font-weight: 700;
-    }
-  }
-
-  a {
-    padding: 1em;
-    text-transform: uppercase;
-    transition: background 0.3s, box-shadow 0.3s;
-    box-shadow: inset 0 -1px rgba(0, 0, 0, 0.2);
-
-    span {
-      letter-spacing: 1px;
-      font-weight: 400;
-    }
-
-    &:hover,
-    &:focus {
-      background: rgba(0, 0, 0, 0.2);
-      box-shadow: inset 0 -1px rgba(0, 0, 0, 0);
-      color: #b8b7ad;
-    }
-  }
-}
-
-#slide,
-#stack {
-  @include menu-1;
-}
-
-#bubble,
-#push {
-  @include menu-2;
-}
-
-#elastic {
-  @include menu-3;
-}
-
-#scaleDown,
-#scaleRotate,
-#pushRotate,
-#fallDown {
-  @include menu-4;
 }
