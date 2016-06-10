@@ -26,6 +26,6 @@ export default Ember.Component.extend({
     }),
 
     click() {
-        this.get("sideMenu").hide();
+        this.get("sideMenu").close();
     },
 });

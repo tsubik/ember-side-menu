@@ -6,19 +6,19 @@ export default Ember.Service.extend({
     isOpen: Ember.computed.equal("progress", 100),
     isClosed: Ember.computed.equal("progress", 0),
 
-    hide() {
+    close() {
         this.set("progress", 0);
     },
 
-    show() {
+    open() {
         this.set("progress", 100);
     },
 
     toggle() {
         if (this.get("isOpen")) {
-            this.hide();
+            this.close();
         } else {
-            this.show();
+            this.open();
         }
     },
 });

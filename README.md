@@ -130,8 +130,8 @@ export default Ember.Route.extend({
   sideMenu: Ember.inject.service(),
 
   actions: {
-    showSideMenu() {
-      this.get("sideMenu").show();
+    openSideMenu() {
+      this.get("sideMenu").open();
     },
   },
 });
@@ -139,8 +139,8 @@ export default Ember.Route.extend({
 
 #### Methods
 
-* show
-* hide
+* open
+* close
 * toggle
 
 #### Properties

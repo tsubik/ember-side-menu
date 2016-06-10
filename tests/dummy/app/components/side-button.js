@@ -15,5 +15,5 @@ export default Ember.Component.extend({
 
     click() {
         this.set("actualSide", this.get("side"));
-    }
+    },
 });

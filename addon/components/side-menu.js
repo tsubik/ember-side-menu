@@ -11,20 +11,17 @@ export default Ember.Component.extend({
     classNames: ["side-menu"],
 
     side: "left",
+    width: "70%",
 
     positionStyle: Ember.computed("width", "side", function () {
         const width = this.get("width");
         const side = this.get("side");
 
-        if (width) {
-            if (side === "left") {
-                return `width: ${width}; right: initial; left: -${width};`;
-            }
-
-            return `width: ${width}; left: initial; right: -${width};`;
+        if (side === "left") {
+            return `width: ${width}; right: initial; left: -${width};`;
         }
 
-        return "";
+        return `width: ${width}; left: initial; right: -${width};`;
     }),
 
     transitionStyle: Ember.computed("progress", function () {
@@ -174,9 +171,9 @@ export default Ember.Component.extend({
                   (side === "right" && isSwipingLeft);
 
         if (isClosingMovement || progress < autoCompleteThreshold) {
-            this.get("sideMenu").hide();
+            this.get("sideMenu").close();
         } else if (isOpeningMovement || progress >= autoCompleteThreshold) {
-            this.get("sideMenu").show();
+            this.get("sideMenu").open();
         }
     },
 

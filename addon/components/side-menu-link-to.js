@@ -4,6 +4,6 @@ export default Ember.LinkComponent.extend({
     sideMenu: Ember.inject.service(),
 
     click() {
-        this.get("sideMenu").hide();
+        this.get("sideMenu").close();
     },
 });

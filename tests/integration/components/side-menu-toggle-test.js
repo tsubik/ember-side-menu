@@ -3,13 +3,43 @@ import hbs from "htmlbars-inline-precompile";
 
 moduleForComponent("side-menu-toggle", "Integration | Component | side menu toggle", {
     integration: true,
+
+    beforeEach() {
+        this.inject.service("side-menu", { as: "sideMenu" });
+    },
 });
 
 test("it renders", function (assert) {
-    // Set any properties with this.set("myProperty", "value");
-    // Handle any actions with this.on("myAction", function(val) { ... });"
-
     this.render(hbs`{{side-menu-toggle}}`);
 
     assert.equal(this.$().text().trim(), "");
+});
+
+test("should change side", function (assert) {
+    assert.expect(2);
+
+    this.set("side", "left");
+    this.render(hbs`{{side-menu-toggle side=side}}`);
+
+    assert.ok(this.$(".side-menu-toggle").hasClass("left"), "left side");
+
+    this.set("side", "right");
+
+    assert.ok(this.$(".side-menu-toggle").hasClass("right"), "right side");
+});
+
+test("click should toggle menu", function (assert) {
+    assert.expect(3);
+
+    this.render(hbs`{{side-menu-toggle}}`);
+
+    assert.ok(this.get("sideMenu.isClosed"), "initially closed");
+
+    this.$(".side-menu-toggle").click();
+
+    assert.ok(this.get("sideMenu.isOpen"), "after click is open");
+
+    this.$(".side-menu-toggle").click();
+
+    assert.ok(this.get("sideMenu.isClosed"), "another click closing");
 });
