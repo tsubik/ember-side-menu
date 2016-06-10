@@ -1,7 +1,7 @@
 {
   "name": "ember-side-menu",
-  "version": "0.0.1",
-  "description": "Side menu component for Ember.js applications",
+  "version": "0.0.2",
+  "description": "Mobile friendly side menu component for Ember.js applications",
   "directories": {
     "doc": "doc",
     "test": "tests"
