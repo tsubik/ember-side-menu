@@ -83,9 +83,12 @@ export default Ember.Component.extend({
         const rootNode = document.querySelector("body");
         const onTouchStart = Ember.run.bind(this, this.rootNodeTouch);
 
-        this.set("rootNode", rootNode);
-        this.set("onTouchStart", onTouchStart);
         rootNode.addEventListener("touchstart", onTouchStart);
+
+        Ember.run.schedule("afterRender", () => {
+            this.set("rootNode", rootNode);
+            this.set("onTouchStart", onTouchStart);
+        });
     },
 
     removeEventListeners() {
