@@ -1,5 +1,8 @@
 # Ember-side-menu
 
+[![Build Status](https://travis-ci.org/tsubik/ember-side-menu.svg?branch=master)](https://travis-ci.org/tsubik/ember-side-menu)
+[![npm version](https://badge.fury.io/js/ember-side-menu.svg)](https://badge.fury.io/js/ember-side-menu)
+
 Mobile friendly Ember menu component using CSS transitions. More effects and SVG path animations coming soon.
 
 ## Demo
