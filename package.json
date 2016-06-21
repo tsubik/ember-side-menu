@@ -1,6 +1,6 @@
 {
   "name": "ember-side-menu",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Mobile friendly side menu component for Ember.js applications",
   "directories": {
     "doc": "doc",
@@ -50,7 +50,16 @@
     "loader.js": "4.0.7"
   },
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "side-menu",
+    "sliding-menu",
+    "menu",
+    "drawer",
+    "sliding",
+    "toggle-menu",
+    "mobile-menu",
+    "drawer-menu",
+    "burger-menu"
   ],
   "ember-addon": {
     "configPath": "tests/dummy/config",
