@@ -134,7 +134,6 @@ export default Ember.Component.extend({
             if (this.isTapInInitialTapArea(event)) {
                 Ember.run.later(() => {
                     if (this.get("isClosed")) {
-                        console.log("set slightlyOpen");
                         this.set("isSlightlyOpen", true);
                     }
                 }, 200);
