@@ -56,11 +56,11 @@ test("should change X position when progress changes (left menu)", function (ass
 
     this.render(hbs`{{side-menu}}`);
 
-    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(0%)") > -1);
+    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(0%)") > -1, "0%");
 
     this.set("sideMenu.progress", 50);
 
-    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(50%)") > -1);
+    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(50%)") > -1, "50%");
 });
 
 test("should change X position when progress changes (right menu)", function (assert) {
@@ -68,9 +68,11 @@ test("should change X position when progress changes (right menu)", function (as
 
     this.render(hbs`{{side-menu side="right"}}`);
 
-    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(0%)") > -1);
+    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(-0%)") > -1, "0%");
 
     this.set("sideMenu.progress", 50);
 
-    assert.ok(this.$(".side-menu").attr("style").indexOf("transform: translateX(-50%)") > -1);
+    assert.ok(
+        this.$(".side-menu").attr("style").indexOf("transform: translateX(-50%)") > -1, "50%"
+    );
 });

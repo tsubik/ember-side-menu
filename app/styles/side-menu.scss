@@ -39,6 +39,10 @@ $side-menu-divider-bg: #e5e5e5;
   }
 }
 
+/* .side-menu.slightly-open { */
+/*   transform: translateX(40px) !important; */
+/* } */
+
 @mixin toggle-bar {
   content: "";
   display: block;

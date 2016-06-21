@@ -1,11 +1,17 @@
 import Ember from "ember";
 
-export default Ember.Component.extend({
-    sideMenu: Ember.inject.service(),
+const {
+    inject: { service },
+    computed,
+} = Ember;
 
-    progress: Ember.computed.alias("sideMenu.progress"),
-    isOpen: Ember.computed.alias("sideMenu.isOpen"),
-    isClosed: Ember.computed.alias("sideMenu.isClosed"),
+export default Ember.Component.extend({
+    sideMenu: service(),
+
+    progress: computed.alias("sideMenu.progress"),
+    isOpen: computed.alias("sideMenu.isOpen"),
+    isClosed: computed.alias("sideMenu.isClosed"),
+    isSlightlyOpen: computed.alias("sideMenu.isSlightlyOpen"),
 
     attributeBindings: ["style"],
     classNames: ["side-menu"],
@@ -13,7 +19,10 @@ export default Ember.Component.extend({
     side: "left",
     width: "70%",
 
-    positionStyle: Ember.computed("width", "side", function () {
+    initialTapAreaWidth: 40,
+    slightlyOpenWidth: 20,
+
+    positionStyle: computed("width", "side", function () {
         const width = this.get("width");
         const side = this.get("side");
 
@@ -24,24 +33,25 @@ export default Ember.Component.extend({
         return `width: ${width}; left: initial; right: -${width};`;
     }),
 
-    transitionStyle: Ember.computed("progress", function () {
+    transitionStyle: computed("progress", function () {
         const progress = this.get("progress");
         return (progress === 0 || progress === 100)
                   ? "transition: transform 0.2s ease-out;"
                   : "transition: none;";
     }),
 
-    transformStyle: Ember.computed("progress", "side", function () {
-        let progress = this.get("progress");
+    transformStyle: computed("progress", "side", "isSlightlyOpen", function () {
+        const side = this.get("side");
+        const isSlightlyOpen = this.get("isSlightlyOpen");
+        const slightlyOpenWidth = this.get("slightlyOpenWidth");
+        const direction = side === "right" ? "-" : "";
+        const unit = isSlightlyOpen ? "px" : "%";
+        const progress = isSlightlyOpen ? slightlyOpenWidth : this.get("progress");
 
-        if (this.get("side") === "right") {
-            progress = -progress;
-        }
-
-        return `transform: translateX(${progress}%);`;
+        return `transform: translateX(${direction}${progress}${unit});`;
     }),
 
-    style: Ember.computed("widthStyle", "transitionStyle", "transformStyle", function () {
+    style: computed("widthStyle", "transitionStyle", "transformStyle", function () {
         const transformStyle = this.get("transformStyle");
         const transitionStyle = this.get("transitionStyle");
         const positionStyle = this.get("positionStyle");
@@ -102,6 +112,9 @@ export default Ember.Component.extend({
         const rootNode = this.get("rootNode");
         const onTouchMove = (event) => {
             event.preventDefault();
+            if (this.get("isSlightlyOpen")) {
+                this.set("isSlightlyOpen", false);
+            }
             this.updateProgress(event.touches[0].pageX);
         };
         const throttledOnTouchMove = (event) => {
@@ -116,8 +129,13 @@ export default Ember.Component.extend({
 
         if (this.needToTrack(event)) {
             this.set("touchStartEvent", event);
-
             this.setTouchOffset(event);
+
+            if (this.isTapInInitialTapArea(event)) {
+                Ember.run.later(() => {
+                    this.set("isSlightlyOpen", true);
+                }, 200);
+            }
 
             rootNode.addEventListener("touchmove", throttledOnTouchMove);
             rootNode.addEventListener("touchend", onTouchEnd);
@@ -181,12 +199,16 @@ export default Ember.Component.extend({
     },
 
     needToTrack(event) {
+        return this.get("isOpen") || this.isTapInInitialTapArea(event);
+    },
+
+    isTapInInitialTapArea(event) {
         const side = this.get("side");
         const pageX = event.touches[0].pageX;
+        const initialTapAreaWidth = this.get("initialTapAreaWidth");
 
-        return this.get("isOpen") ||
-            (side === "left" && pageX < 40) ||
-            (side === "right" && pageX > window.innerWidth - 40);
+        return (side === "left" && pageX < initialTapAreaWidth) ||
+            (side === "right" && pageX > window.innerWidth - initialTapAreaWidth);
     },
 
     calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
