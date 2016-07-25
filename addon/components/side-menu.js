@@ -108,7 +108,7 @@ export default Ember.Component.extend({
         rootNode.removeEventListener("touchstart", onTouchStart);
     },
 
-    rootNodeTouch() {
+    rootNodeTouch(evt) {
         const rootNode = document.querySelector(this.get("rootNodeSelector"));
         const onTouchMove = (event) => {
             event.preventDefault();
@@ -127,11 +127,11 @@ export default Ember.Component.extend({
             this.completeMenuTransition(event);
         });
 
-        if (this.needToTrack(event)) {
-            this.set("touchStartEvent", event);
-            this.setTouchOffset(event);
+        if (this.needToTrack(evt)) {
+            this.set("touchStartEvent", evt);
+            this.setTouchOffset(evt);
 
-            if (this.isTapInInitialTapArea(event)) {
+            if (this.isTapInInitialTapArea(evt)) {
                 Ember.run.later(() => {
                     if (this.get("isClosed")) {
                         this.set("isSlightlyOpen", true);
