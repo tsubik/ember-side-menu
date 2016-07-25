@@ -1,14 +1,22 @@
 import Ember from "ember";
 
-export default Ember.Component.extend({
-    sideMenu: Ember.inject.service(),
+const {
+    computed,
+    computed: { alias },
+    inject: { service },
+    get,
+    set,
+} = Ember;
 
-    progress: Ember.computed.alias("sideMenu.progress"),
+export default Ember.Component.extend({
+    sideMenu: service(),
+
+    progress: alias("sideMenu.progress"),
 
     attributeBindings: ["style"],
     classNames: ["content-backdrop"],
 
-    style: Ember.computed("progress", function () {
+    style: computed("progress", function () {
         const progress = this.get("progress");
         const opacity = progress / 100;
         const visibility = progress === 0 ? "hidden" : "visible";
