@@ -5,6 +5,8 @@
 
 Mobile friendly Ember menu component using CSS transitions. More effects and SVG path animations coming soon.
 
+![menu](https://cloud.githubusercontent.com/assets/1286444/16232587/722922f2-37cb-11e6-89bc-e529a916b80f.gif)
+
 ## Demo
 
 Check out the live demo [here][live-demo]
