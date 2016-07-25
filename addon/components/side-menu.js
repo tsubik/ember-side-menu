@@ -18,6 +18,7 @@ export default Ember.Component.extend({
 
     side: "left",
     width: "70%",
+    rootNodeSelector: "body",
 
     initialTapAreaWidth: 40,
     slightlyOpenWidth: 20,
@@ -64,7 +65,7 @@ export default Ember.Component.extend({
     disableScroll: Ember.on("init", Ember.observer("isClosed", function () {
         const isClosed = this.get("isClosed");
         const wasClosed = this.get("wasClosed");
-        const rootNode = this.get("rootNode");
+        const rootNode = document.querySelector(this.get("rootNodeSelector"));
 
         if (isClosed === wasClosed) {
             return;
@@ -90,26 +91,25 @@ export default Ember.Component.extend({
     },
 
     setupEventListeners() {
-        const rootNode = document.querySelector("body");
+        const rootNode = document.querySelector(this.get("rootNodeSelector"));
         const onTouchStart = Ember.run.bind(this, this.rootNodeTouch);
 
         rootNode.addEventListener("touchstart", onTouchStart);
 
         Ember.run.schedule("afterRender", () => {
-            this.set("rootNode", rootNode);
             this.set("onTouchStart", onTouchStart);
         });
     },
 
     removeEventListeners() {
         const onTouchStart = this.get("onTouchStart");
-        const rootNode = this.get("rootNode");
+        const rootNode = document.querySelector(this.get("rootNodeSelector"));
 
         rootNode.removeEventListener("touchstart", onTouchStart);
     },
 
     rootNodeTouch() {
-        const rootNode = this.get("rootNode");
+        const rootNode = document.querySelector(this.get("rootNodeSelector"));
         const onTouchMove = (event) => {
             event.preventDefault();
             if (this.get("isSlightlyOpen")) {
