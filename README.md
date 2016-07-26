@@ -15,6 +15,10 @@ Check out the live demo [here][live-demo]
 
 `ember install ember-side-menu`
 
+Import ember-side-menu styles in your application's `app.scss` file.
+
+`@import "ember-side-menu";`
+
 ## Usage
 
 ### Side Menu
@@ -68,6 +72,10 @@ document for example in `application.hbs` file.
 * side - (string), which side of screen your menu takes. Possible values: ["left", "right"], default: "left"
 * width - (string), target width of open menu. CSS width - example values: ["40px", "40%", ...], default: null (default width set in
 CSS stylesheet to 70%)
+* initialTapAreaWidth - (integer, in px) - area width on left/right screen edge when menu swipe opening
+is initiated, default: 30
+* slightlyOpenWidth - (integer, in px) - width of slightly open menu. Menu is opened slightly on tap event
+within `initialTapAreaWidth` to the edge, default: 20
 
 ### Content Backdrop
 
@@ -152,6 +160,7 @@ export default Ember.Route.extend({
 
 * isOpen (boolean)
 * isClosed (boolean)
+* isSlightlyOpen (boolean)
 * progress (number) 0-100
 
 ## License

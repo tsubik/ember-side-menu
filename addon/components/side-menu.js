@@ -29,7 +29,7 @@ export default Component.extend({
     width: "70%",
     rootNodeSelector: "body",
 
-    initialTapAreaWidth: 40,
+    initialTapAreaWidth: 30,
     slightlyOpenWidth: 20,
 
     positionStyle: computed("width", "side", function () {
