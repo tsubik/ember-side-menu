@@ -1,17 +1,26 @@
 import Ember from "ember";
 
 const {
-    inject: { service },
+    Component,
     computed,
+    computed: { alias },
+    get,
+    set,
+    $,
+    inject: { service },
+    observer,
+    on,
+    run: { schedule, bind, later, throttle },
+    Handlebars: { SafeString },
 } = Ember;
 
-export default Ember.Component.extend({
+export default Component.extend({
     sideMenu: service(),
 
-    progress: computed.alias("sideMenu.progress"),
-    isOpen: computed.alias("sideMenu.isOpen"),
-    isClosed: computed.alias("sideMenu.isClosed"),
-    isSlightlyOpen: computed.alias("sideMenu.isSlightlyOpen"),
+    progress: alias("sideMenu.progress"),
+    isOpen: alias("sideMenu.isOpen"),
+    isClosed: alias("sideMenu.isClosed"),
+    isSlightlyOpen: alias("sideMenu.isSlightlyOpen"),
 
     attributeBindings: ["style"],
     classNames: ["side-menu"],
@@ -24,8 +33,8 @@ export default Ember.Component.extend({
     slightlyOpenWidth: 20,
 
     positionStyle: computed("width", "side", function () {
-        const width = this.get("width");
-        const side = this.get("side");
+        const width = get(this, "width");
+        const side = get(this, "side");
 
         if (side === "left") {
             return `width: ${width}; right: initial; left: -${width};`;
@@ -35,153 +44,155 @@ export default Ember.Component.extend({
     }),
 
     transitionStyle: computed("progress", function () {
-        const progress = this.get("progress");
+        const progress = get(this, "progress");
         return (progress === 0 || progress === 100)
                   ? "transition: transform 0.2s ease-out;"
                   : "transition: none;";
     }),
 
     transformStyle: computed("progress", "side", "isSlightlyOpen", function () {
-        const side = this.get("side");
-        const isSlightlyOpen = this.get("isSlightlyOpen");
-        const slightlyOpenWidth = this.get("slightlyOpenWidth");
+        const side = get(this, "side");
+        const isSlightlyOpen = get(this, "isSlightlyOpen");
+        const slightlyOpenWidth = get(this, "slightlyOpenWidth");
         const direction = side === "right" ? "-" : "";
         const unit = isSlightlyOpen ? "px" : "%";
-        const progress = isSlightlyOpen ? slightlyOpenWidth : this.get("progress");
+        const progress = isSlightlyOpen ? slightlyOpenWidth : get(this, "progress");
 
         return `transform: translateX(${direction}${progress}${unit});`;
     }),
 
     style: computed("widthStyle", "transitionStyle", "transformStyle", function () {
-        const transformStyle = this.get("transformStyle");
-        const transitionStyle = this.get("transitionStyle");
-        const positionStyle = this.get("positionStyle");
+        const transformStyle = get(this, "transformStyle");
+        const transitionStyle = get(this, "transitionStyle");
+        const positionStyle = get(this, "positionStyle");
 
-        return new Ember.Handlebars.SafeString(
+        return new SafeString(
             `${transformStyle}${transitionStyle}${positionStyle}`
         );
     }),
 
-    disableScroll: Ember.on("init", Ember.observer("isClosed", function () {
-        const isClosed = this.get("isClosed");
-        const wasClosed = this.get("wasClosed");
-        const rootNode = document.querySelector(this.get("rootNodeSelector"));
+    disableScroll: on("init", observer("isClosed", function () {
+        const isClosed = get(this, "isClosed");
+        const wasClosed = get(this, "wasClosed");
 
         if (isClosed === wasClosed) {
             return;
         }
 
+        const $rootNode = $(get(this, "rootNodeSelector"));
+
         if (isClosed) {
-            Ember.$(rootNode).removeClass("disable-scroll");
+            $rootNode.removeClass("disable-scroll");
         } else {
-            Ember.$(rootNode).addClass("disable-scroll");
+            $rootNode.addClass("disable-scroll");
         }
 
-        this.set("wasClosed", isClosed);
+        set(this, "wasClosed", isClosed);
     })),
 
     didInsertElement() {
         this._super(...arguments);
-        this.setupEventListeners();
+        this._setupEventListeners();
     },
 
     willDestroyElement() {
         this._super(...arguments);
-        this.removeEventListeners();
+        this._removeEventListeners();
     },
 
-    setupEventListeners() {
-        const rootNode = document.querySelector(this.get("rootNodeSelector"));
-        const onTouchStart = Ember.run.bind(this, this.rootNodeTouch);
+    _setupEventListeners() {
+        const $rootNode = $(get(this, "rootNodeSelector"));
+        const onRootNodeTouch = bind(this, this._onRootNodeTouch);
 
-        rootNode.addEventListener("touchstart", onTouchStart);
+        $rootNode.on("touchstart", onRootNodeTouch);
 
-        Ember.run.schedule("afterRender", () => {
-            this.set("onTouchStart", onTouchStart);
+        schedule("afterRender", () => {
+            set(this, "onTouchStart", onRootNodeTouch);
         });
     },
 
-    removeEventListeners() {
-        const onTouchStart = this.get("onTouchStart");
-        const rootNode = document.querySelector(this.get("rootNodeSelector"));
+    _removeEventListeners() {
+        const onTouchStart = get(this, "onTouchStart");
+        const $rootNode = $(get(this, "rootNodeSelector"));
 
-        rootNode.removeEventListener("touchstart", onTouchStart);
+        $rootNode.off("touchstart", onTouchStart);
     },
 
-    rootNodeTouch(evt) {
-        const rootNode = document.querySelector(this.get("rootNodeSelector"));
+    _onRootNodeTouch(evt) {
+        const $rootNode = $(get(this, "rootNodeSelector"));
         const onTouchMove = (event) => {
             event.preventDefault();
-            if (this.get("isSlightlyOpen")) {
-                this.set("isSlightlyOpen", false);
+            if (get(this, "isSlightlyOpen")) {
+                set(this, "isSlightlyOpen", false);
             }
-            this.updateProgress(event.touches[0].pageX);
+            this._updateProgress(event.originalEvent.touches[0].pageX);
         };
         const throttledOnTouchMove = (event) => {
-            Ember.run.throttle(this, onTouchMove, event, 10);
+            throttle(this, onTouchMove, event, 10);
         };
-        const onTouchEnd = Ember.run.bind(this, (event) => {
-            rootNode.removeEventListener("touchmove", throttledOnTouchMove);
-            rootNode.removeEventListener("touchend", onTouchEnd);
+        const onTouchEnd = bind(this, (event) => {
+            $rootNode.off("touchmove", throttledOnTouchMove);
+            $rootNode.off("touchend", onTouchEnd);
 
-            this.completeMenuTransition(event);
+            this._completeMenuTransition(event);
         });
 
-        if (this.needToTrack(evt)) {
-            this.set("touchStartEvent", evt);
-            this.setTouchOffset(evt);
+        if (this._needToTrack(evt)) {
+            set(this, "touchStartEvent", evt);
+            this._setTouchOffset(evt);
 
-            if (this.isTapInInitialTapArea(evt)) {
-                Ember.run.later(() => {
-                    if (this.get("isClosed")) {
-                        this.set("isSlightlyOpen", true);
+            if (this._isTapInInitialTapArea(evt)) {
+                later(() => {
+                    if (get(this, "isClosed")) {
+                        set(this, "isSlightlyOpen", true);
                     }
                 }, 200);
             }
 
-            rootNode.addEventListener("touchmove", throttledOnTouchMove);
-            rootNode.addEventListener("touchend", onTouchEnd);
+            $rootNode.on("touchmove", throttledOnTouchMove);
+            $rootNode.on("touchend", onTouchEnd);
         }
     },
 
-    setTouchOffset(event) {
-        const isOpen = this.get("isOpen");
-        const pageX = event.touches[0].pageX;
-        const side = this.get("side");
+    _setTouchOffset(event) {
+        const isOpen = get(this, "isOpen");
+        const pageX = event.originalEvent.touches[0].pageX;
+        const side = get(this, "side");
 
         if (isOpen) {
             if (side === "left") {
-                this.set("touchOffset", Math.max(0, this.element.offsetWidth - pageX));
+                set(this, "touchOffset", Math.max(0, this.element.offsetWidth - pageX));
             } else {
-                this.set(
+                set(
+                    this,
                     "touchOffset",
                     Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX))
                 );
             }
         } else {
-            this.set("touchOffset", 0);
+            set(this, "touchOffset", 0);
         }
     },
 
-    updateProgress(touchPageX) {
+    _updateProgress(touchPageX) {
         const elementWidth = this.element.offsetWidth;
-        const touchOffset = this.get("touchOffset");
-        const side = this.get("side");
+        const touchOffset = get(this, "touchOffset");
+        const side = get(this, "side");
         const relativeX = side === "left" ? touchPageX : window.innerWidth - touchPageX;
         const progress = Math.min((relativeX + touchOffset) / elementWidth * 100, 100);
 
-        this.set("progress", progress);
+        set(this, "progress", progress);
     },
 
-    completeMenuTransition(event) {
-        const progress = this.get("progress");
-        const touchStartEvent = this.get("touchStartEvent");
-        const side = this.get("side");
-        const velocityX = this.calculateVelocityX(
-            touchStartEvent.touches[0].pageX,
-            touchStartEvent.timeStamp,
-            event.changedTouches[0].pageX,
-            event.timeStamp
+    _completeMenuTransition(event) {
+        const progress = get(this, "progress");
+        const touchStartEvent = get(this, "touchStartEvent");
+        const side = get(this, "side");
+        const velocityX = this._calculateVelocityX(
+            touchStartEvent.originalEvent.touches[0].pageX,
+            touchStartEvent.originalEvent.timeStamp,
+            event.originalEvent.changedTouches[0].pageX,
+            event.originalEvent.timeStamp
         );
         const minClosingVelocity = 0.3;
         const autoCompleteThreshold = 50;
@@ -194,26 +205,26 @@ export default Ember.Component.extend({
                   (side === "right" && isSwipingLeft);
 
         if (isClosingMovement || progress < autoCompleteThreshold) {
-            this.get("sideMenu").close();
+            get(this, "sideMenu").close();
         } else if (isOpeningMovement || progress >= autoCompleteThreshold) {
-            this.get("sideMenu").open();
+            get(this, "sideMenu").open();
         }
     },
 
-    needToTrack(event) {
-        return this.get("isOpen") || this.isTapInInitialTapArea(event);
+    _needToTrack(event) {
+        return get(this, "isOpen") || this._isTapInInitialTapArea(event);
     },
 
-    isTapInInitialTapArea(event) {
-        const side = this.get("side");
-        const pageX = event.touches[0].pageX;
-        const initialTapAreaWidth = this.get("initialTapAreaWidth");
+    _isTapInInitialTapArea(event) {
+        const side = get(this, "side");
+        const pageX = event.originalEvent.touches[0].pageX;
+        const initialTapAreaWidth = get(this, "initialTapAreaWidth");
 
         return (side === "left" && pageX < initialTapAreaWidth) ||
             (side === "right" && pageX > window.innerWidth - initialTapAreaWidth);
     },
 
-    calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
+    _calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
         const deltaX = startX - endX;
         const deltaTime = endTimeStamp - startTimeStamp;
 

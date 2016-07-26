@@ -1,9 +1,15 @@
 import Ember from "ember";
 
-export default Ember.LinkComponent.extend({
-    sideMenu: Ember.inject.service(),
+const {
+    get,
+    inject: { service },
+    LinkComponent,
+} = Ember;
+
+export default LinkComponent.extend({
+    sideMenu: service(),
 
     click() {
-        this.get("sideMenu").close();
+        get(this, "sideMenu").close();
     },
 });

@@ -1,14 +1,14 @@
 import Ember from "ember";
 
 const {
+    Component,
     computed,
     computed: { alias },
     inject: { service },
     get,
-    set,
 } = Ember;
 
-export default Ember.Component.extend({
+export default Component.extend({
     sideMenu: service(),
 
     progress: alias("sideMenu.progress"),
@@ -17,7 +17,7 @@ export default Ember.Component.extend({
     classNames: ["content-backdrop"],
 
     style: computed("progress", function () {
-        const progress = this.get("progress");
+        const progress = get(this, "progress");
         const opacity = progress / 100;
         const visibility = progress === 0 ? "hidden" : "visible";
         let transition = "none";
@@ -34,6 +34,6 @@ export default Ember.Component.extend({
     }),
 
     click() {
-        this.get("sideMenu").close();
+        get(this, "sideMenu").close();
     },
 });

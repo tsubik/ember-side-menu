@@ -1,24 +1,31 @@
 import Ember from "ember";
 
-export default Ember.Service.extend({
+const {
+    computed: { equal },
+    get,
+    set,
+    Service,
+} = Ember;
+
+export default Service.extend({
     // progress 0-100 %
     progress: 0,
-    isOpen: Ember.computed.equal("progress", 100),
-    isClosed: Ember.computed.equal("progress", 0),
+    isOpen: equal("progress", 100),
+    isClosed: equal("progress", 0),
     isSlightlyOpen: false,
 
     close() {
-        this.set("progress", 0);
-        this.set("isSlightlyOpen", false);
+        set(this, "progress", 0);
+        set(this, "isSlightlyOpen", false);
     },
 
     open() {
-        this.set("progress", 100);
-        this.set("isSlightlyOpen", false);
+        set(this, "progress", 100);
+        set(this, "isSlightlyOpen", false);
     },
 
     toggle() {
-        if (this.get("isOpen")) {
+        if (get(this, "isOpen")) {
             this.close();
         } else {
             this.open();

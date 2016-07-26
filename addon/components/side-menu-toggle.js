@@ -1,7 +1,13 @@
 import Ember from "ember";
 
-export default Ember.Component.extend({
-    sideMenu: Ember.inject.service(),
+const {
+    Component,
+    get,
+    inject: { service },
+} = Ember;
+
+export default Component.extend({
+    sideMenu: service(),
 
     classNameBindings: ["side"],
     classNames: ["side-menu-toggle"],
@@ -9,6 +15,6 @@ export default Ember.Component.extend({
     side: "left",
 
     click() {
-        this.get("sideMenu").toggle();
+        get(this, "sideMenu").toggle();
     },
 });
