@@ -76,6 +76,8 @@ CSS stylesheet to 70%)
 is initiated, default: 30
 * slightlyOpenWidth - (integer, in px) - width of slightly open menu. Menu is opened slightly on tap event
 within `initialTapAreaWidth` to the edge, default: 20
+* slightlyOpenAfter - (integer, in ms) - time delay after which menu is slighlty opened if it is still closed,
+default: 300
 
 ### Content Backdrop
 

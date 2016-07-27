@@ -10,7 +10,7 @@ const {
     inject: { service },
     observer,
     on,
-    run: { schedule, bind, later, throttle },
+    run: { schedule, cancel, bind, later, throttle },
     Handlebars: { SafeString },
 } = Ember;
 
@@ -21,6 +21,7 @@ export default Component.extend({
     isOpen: alias("sideMenu.isOpen"),
     isClosed: alias("sideMenu.isClosed"),
     isSlightlyOpen: alias("sideMenu.isSlightlyOpen"),
+    isTouching: false,
 
     attributeBindings: ["style"],
     classNames: ["side-menu"],
@@ -31,6 +32,7 @@ export default Component.extend({
 
     initialTapAreaWidth: 30,
     slightlyOpenWidth: 20,
+    slightlyOpenAfter: 300,
 
     positionStyle: computed("width", "side", function () {
         const width = get(this, "width");
@@ -119,13 +121,22 @@ export default Component.extend({
     },
 
     _onRootNodeTouch(evt) {
+        let runOpenMenuSlightly;
         const $rootNode = $(get(this, "rootNodeSelector"));
         const onTouchMove = (event) => {
             event.preventDefault();
-            if (get(this, "isSlightlyOpen")) {
-                set(this, "isSlightlyOpen", false);
+
+            if (runOpenMenuSlightly) {
+                cancel(runOpenMenuSlightly);
             }
-            this._updateProgress(event.originalEvent.touches[0].pageX);
+
+            if (!(this._isTouchWithin(event, get(this, "slightlyOpenWidth"))
+                  && this.get("isClosed"))) {
+                if (get(this, "isSlightlyOpen")) {
+                    set(this, "isSlightlyOpen", false);
+                }
+                this._updateProgress(event.originalEvent.touches[0].pageX);
+            }
         };
         const throttledOnTouchMove = (event) => {
             throttle(this, onTouchMove, event, 10);
@@ -133,20 +144,27 @@ export default Component.extend({
         const onTouchEnd = bind(this, (event) => {
             $rootNode.off("touchmove", throttledOnTouchMove);
             $rootNode.off("touchend", onTouchEnd);
+            set(this, "isTouching", false);
+
+            if (runOpenMenuSlightly) {
+                cancel(runOpenMenuSlightly);
+            }
 
             this._completeMenuTransition(event);
         });
+
+        set(this, "isTouching", true);
 
         if (this._needToTrack(evt)) {
             set(this, "touchStartEvent", evt);
             this._setTouchOffset(evt);
 
-            if (this._isTapInInitialTapArea(evt)) {
-                later(() => {
-                    if (get(this, "isClosed")) {
+            if (this._isTouchWithin(evt, get(this, "initialTapAreaWidth"))) {
+                runOpenMenuSlightly = later(() => {
+                    if (get(this, "isClosed") && get(this, "isTouching")) {
                         set(this, "isSlightlyOpen", true);
                     }
-                }, 200);
+                }, get(this, "slightlyOpenAfter"));
             }
 
             $rootNode.on("touchmove", throttledOnTouchMove);
@@ -212,16 +230,16 @@ export default Component.extend({
     },
 
     _needToTrack(event) {
-        return get(this, "isOpen") || this._isTapInInitialTapArea(event);
+        return get(this, "isOpen") ||
+            this._isTouchWithin(event, get(this, "initialTapAreaWidth"));
     },
 
-    _isTapInInitialTapArea(event) {
+    _isTouchWithin(event, areaWidth) {
         const side = get(this, "side");
         const pageX = event.originalEvent.touches[0].pageX;
-        const initialTapAreaWidth = get(this, "initialTapAreaWidth");
 
-        return (side === "left" && pageX < initialTapAreaWidth) ||
-            (side === "right" && pageX > window.innerWidth - initialTapAreaWidth);
+        return (side === "left" && pageX < areaWidth) ||
+            (side === "right" && pageX > window.innerWidth - areaWidth);
     },
 
     _calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
