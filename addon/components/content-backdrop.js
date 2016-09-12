@@ -3,6 +3,7 @@ import Ember from "ember";
 const {
     Component,
     computed,
+    String: { htmlSafe },
     computed: { alias },
     inject: { service },
     get,
@@ -28,7 +29,7 @@ export default Component.extend({
             transition = "visibility 0s linear 0.2s, opacity 0.2s ease-out";
         }
 
-        return new Ember.Handlebars.SafeString(
+        return htmlSafe(
             `opacity: ${opacity}; visibility: ${visibility}; transition: ${transition}`
         );
     }),

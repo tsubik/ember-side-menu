@@ -4,6 +4,7 @@ const {
     Component,
     computed,
     computed: { alias },
+    String: { htmlSafe },
     get,
     set,
     $,
@@ -11,7 +12,6 @@ const {
     observer,
     on,
     run: { schedule, cancel, bind, later, throttle },
-    Handlebars: { SafeString },
 } = Ember;
 
 export default Component.extend({
@@ -68,9 +68,7 @@ export default Component.extend({
         const transitionStyle = get(this, "transitionStyle");
         const positionStyle = get(this, "positionStyle");
 
-        return new SafeString(
-            `${transformStyle}${transitionStyle}${positionStyle}`
-        );
+        return htmlSafe(`${transformStyle}${transitionStyle}${positionStyle}`);
     }),
 
     disableScroll: on("init", observer("isClosed", function () {
