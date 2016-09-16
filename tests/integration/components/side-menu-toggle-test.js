@@ -43,3 +43,21 @@ test("click should toggle menu", function (assert) {
 
     assert.ok(this.get("sideMenu.isClosed"), "another click closing");
 });
+
+test("click should not toggle menu open when disabled", function (assert) {
+    assert.expect(3);
+
+    this.render(hbs`{{side-menu-toggle}}`);
+
+    assert.ok(this.get("sideMenu.isClosed"), "initially closed");
+
+    this.set("sideMenu.disabled", true);
+    this.$(".side-menu-toggle").click();
+
+    assert.ok(this.get("sideMenu.isClosed"), "after click is still closed");
+
+    this.set("sideMenu.disabled", false);
+    this.$(".side-menu-toggle").click();
+
+    assert.ok(this.get("sideMenu.isOpen"), "opens after enabling");
+});
