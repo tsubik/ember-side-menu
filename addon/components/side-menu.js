@@ -9,9 +9,7 @@ const {
     set,
     $,
     inject: { service },
-    observer,
-    on,
-    run: { schedule, cancel, bind, later, throttle },
+    run: { schedule, cancel, bind, later, throttle, once },
 } = Ember;
 
 export default Component.extend({
@@ -71,14 +69,27 @@ export default Component.extend({
         return htmlSafe(`${transformStyle}${transitionStyle}${positionStyle}`);
     }),
 
-    disableScroll: on("init", observer("isClosed", function () {
+    // disableScroll: on("init", observer("isClosed", function () {
+    //     const isClosed = get(this, "isClosed");
+    //     const wasClosed = get(this, "wasClosed");
+
+    //     if (isClosed === wasClosed) {
+    //         return;
+    //     }
+
+    //     const $rootNode = $(get(this, "rootNodeSelector"));
+
+    //     if (isClosed) {
+    //         $rootNode.removeClass("disable-scroll");
+    //     } else {
+    //         $rootNode.addClass("disable-scroll");
+    //     }
+
+    //     set(this, "wasClosed", isClosed);
+    // })),
+
+    _setScrollDisable() {
         const isClosed = get(this, "isClosed");
-        const wasClosed = get(this, "wasClosed");
-
-        if (isClosed === wasClosed) {
-            return;
-        }
-
         const $rootNode = $(get(this, "rootNodeSelector"));
 
         if (isClosed) {
@@ -86,9 +97,7 @@ export default Component.extend({
         } else {
             $rootNode.addClass("disable-scroll");
         }
-
-        set(this, "wasClosed", isClosed);
-    })),
+    },
 
     didInsertElement() {
         this._super(...arguments);
@@ -108,6 +117,12 @@ export default Component.extend({
 
         schedule("afterRender", () => {
             set(this, "onTouchStart", onRootNodeTouch);
+        });
+    },
+
+    _setupObservers() {
+        this.addObserver("isClosed", () => {
+            once(this, "_setScrollDisable");
         });
     },
 
