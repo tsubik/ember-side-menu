@@ -11,6 +11,10 @@ Mobile friendly Ember menu component using CSS transitions. More effects and SVG
 
 Check out the live demo [here][live-demo]
 
+## Ember Compability
+
+This addon is compatible with and tested against Ember 1.13 and higher.
+
 ## Installation
 
 `ember install ember-side-menu`
