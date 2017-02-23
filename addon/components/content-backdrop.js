@@ -4,7 +4,7 @@ const {
     Component,
     computed,
     String: { htmlSafe },
-    computed: { alias },
+    computed: { oneWay },
     inject: { service },
     get,
 } = Ember;
@@ -12,7 +12,7 @@ const {
 export default Component.extend({
     sideMenu: service(),
 
-    progress: alias("sideMenu.progress"),
+    progress: oneWay("sideMenu.progress"),
 
     attributeBindings: ["style"],
     classNames: ["content-backdrop"],
