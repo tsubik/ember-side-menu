@@ -61,7 +61,7 @@ export default Component.extend({
         return `transform: translateX(${direction}${progress}${unit});`;
     }),
 
-    style: computed("widthStyle", "transitionStyle", "transformStyle", function () {
+    style: computed("positionStyle", "transitionStyle", "transformStyle", function () {
         const transformStyle = get(this, "transformStyle");
         const transitionStyle = get(this, "transitionStyle");
         const positionStyle = get(this, "positionStyle");
