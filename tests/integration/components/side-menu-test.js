@@ -34,6 +34,23 @@ test("default side should be left and width 70%", function (assert) {
     assert.ok(this.$(".side-menu").attr("style").indexOf("right: initial; left: -70%") > -1);
 });
 
+test("should impose no box shadows if progress 0", function (assert) {
+    assert.expect(1);
+
+    this.render(hbs`{{side-menu}}`);
+
+    assert.ok(this.$(".side-menu").attr("style").indexOf("box-shadow: none") > -1);
+});
+
+test("should not have box-shadow style none if progress > 0", function (assert) {
+    assert.expect(1);
+
+    this.set("sideMenu.progress", 50);
+    this.render(hbs`{{side-menu}}`);
+
+    assert.ok(this.$(".side-menu").attr("style").indexOf("box-shadow: none") === -1);
+});
+
 test("should change side", function (assert) {
     assert.expect(1);
 

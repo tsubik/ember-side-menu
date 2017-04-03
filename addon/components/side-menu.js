@@ -12,6 +12,13 @@ const {
     run: { schedule, cancel, bind, later, throttle, once },
 } = Ember;
 
+const styleProps = [
+    "shadowStyle",
+    "positionStyle",
+    "transitionStyle",
+    "transformStyle",
+];
+
 export default Component.extend({
     sideMenu: service(),
 
@@ -31,6 +38,11 @@ export default Component.extend({
     initialTapAreaWidth: 30,
     slightlyOpenWidth: 20,
     slightlyOpenAfter: 300,
+
+    shadowStyle: computed("progress", function () {
+        const progress = get(this, "progress");
+        return progress === 0 ? "box-shadow: none;" : "";
+    }),
 
     positionStyle: computed("width", "side", function () {
         const width = get(this, "width");
@@ -61,12 +73,13 @@ export default Component.extend({
         return `transform: translateX(${direction}${progress}${unit});`;
     }),
 
-    style: computed("positionStyle", "transitionStyle", "transformStyle", function () {
-        const transformStyle = get(this, "transformStyle");
-        const transitionStyle = get(this, "transitionStyle");
-        const positionStyle = get(this, "positionStyle");
+    style: computed(...styleProps, function () {
+        const combinedStyle = styleProps.reduce(
+            (acc, style) => acc + get(this, style),
+            ""
+        );
 
-        return htmlSafe(`${transformStyle}${transitionStyle}${positionStyle}`);
+        return htmlSafe(combinedStyle);
     }),
 
     // disableScroll: on("init", observer("isClosed", function () {
