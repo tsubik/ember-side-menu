@@ -9,7 +9,7 @@ const {
     set,
     $,
     inject: { service },
-    run: { schedule, cancel, bind, later, throttle, once },
+    run: { schedule, cancel, bind, later, throttle },
 } = Ember;
 
 const styleProps = [
@@ -82,27 +82,12 @@ export default Component.extend({
         return htmlSafe(combinedStyle);
     }),
 
-    // disableScroll: on("init", observer("isClosed", function () {
-    //     const isClosed = get(this, "isClosed");
-    //     const wasClosed = get(this, "wasClosed");
-
-    //     if (isClosed === wasClosed) {
-    //         return;
-    //     }
-
-    //     const $rootNode = $(get(this, "rootNodeSelector"));
-
-    //     if (isClosed) {
-    //         $rootNode.removeClass("disable-scroll");
-    //     } else {
-    //         $rootNode.addClass("disable-scroll");
-    //     }
-
-    //     set(this, "wasClosed", isClosed);
-    // })),
-
     _setScrollDisable() {
         const isClosed = get(this, "isClosed");
+        const wasClosed = get(this, "wasClosed");
+
+        if (isClosed === wasClosed) return;
+
         const $rootNode = $(get(this, "rootNodeSelector"));
 
         if (isClosed) {
@@ -110,16 +95,20 @@ export default Component.extend({
         } else {
             $rootNode.addClass("disable-scroll");
         }
+
+        set(this, "wasClosed", isClosed);
     },
 
     didInsertElement() {
         this._super(...arguments);
         this._setupEventListeners();
+        this._setupObservers();
     },
 
     willDestroyElement() {
         this._super(...arguments);
         this._removeEventListeners();
+        this._removeObservers();
     },
 
     _setupEventListeners() {
@@ -134,9 +123,12 @@ export default Component.extend({
     },
 
     _setupObservers() {
-        this.addObserver("isClosed", () => {
-            once(this, "_setScrollDisable");
-        });
+        this._setScrollDisable();
+        this.addObserver("isClosed", this, "_setScrollDisable");
+    },
+
+    _removeObservers() {
+        this.removeObserver("isClosed", this, "_setScrollDisable");
     },
 
     _removeEventListeners() {
@@ -150,8 +142,6 @@ export default Component.extend({
         let runOpenMenuSlightly;
         const $rootNode = $(get(this, "rootNodeSelector"));
         const onTouchMove = (event) => {
-            event.preventDefault();
-
             if (runOpenMenuSlightly) {
                 cancel(runOpenMenuSlightly);
             }

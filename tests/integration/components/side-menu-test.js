@@ -1,5 +1,8 @@
+import Ember from "ember";
 import { moduleForComponent, test } from "ember-qunit";
 import hbs from "htmlbars-inline-precompile";
+
+const { $ } = Ember;
 
 moduleForComponent("side-menu", "Integration | Component | side menu", {
     integration: true,
@@ -91,5 +94,20 @@ test("should change X position when progress changes (right menu)", function (as
 
     assert.ok(
         this.$(".side-menu").attr("style").indexOf("transform: translateX(-50%)") > -1, "50%"
+    );
+});
+
+test("rootNode should have class disable-scroll when menu is not closed", function (assert) {
+    assert.expect(2);
+
+    this.render(hbs`{{side-menu}}`);
+
+    assert.notOk($("body").hasClass("disable-scroll"), "no disable-scroll class when closed");
+
+    this.set("sideMenu.progress", 50);
+
+    assert.ok(
+        $("body").hasClass("disable-scroll"),
+        "disable-scroll class when not closed"
     );
 });
