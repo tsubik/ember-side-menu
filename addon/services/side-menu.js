@@ -1,7 +1,8 @@
 import Ember from "ember";
 
 const {
-    computed: { equal },
+    computed: { equal, reads, not },
+    computed,
     get,
     set,
     Service,
@@ -12,7 +13,18 @@ export default Service.extend({
     progress: 0,
     isOpen: equal("progress", 100),
     isClosed: equal("progress", 0),
+    isDisabled: reads("disabled"),
+    isEnabled: not("disabled"),
     isSlightlyOpen: false,
+    disabled: computed({
+        get() {
+            return false;
+        },
+        set(_key, value) {
+            if (value) { this.close(); }
+            return value;
+        },
+    }),
 
     close() {
         set(this, "progress", 0);
@@ -20,6 +32,7 @@ export default Service.extend({
     },
 
     open() {
+        if (get(this, "disabled")) { return; }
         set(this, "progress", 100);
         set(this, "isSlightlyOpen", false);
     },
@@ -30,5 +43,13 @@ export default Service.extend({
         } else {
             this.open();
         }
+    },
+
+    disable() {
+        set(this, "disabled", true);
+    },
+
+    enable() {
+        set(this, "disabled", false);
     },
 });

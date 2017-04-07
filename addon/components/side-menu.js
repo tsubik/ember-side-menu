@@ -25,11 +25,13 @@ export default Component.extend({
     progress: alias("sideMenu.progress"),
     isOpen: alias("sideMenu.isOpen"),
     isClosed: alias("sideMenu.isClosed"),
+    isDisabled: alias("sideMenu.isDisabled"),
     isSlightlyOpen: alias("sideMenu.isSlightlyOpen"),
     isTouching: false,
 
     attributeBindings: ["style"],
     classNames: ["side-menu"],
+    classNameBindings: ["isDisabled:side-menu-disabled"],
 
     side: "left",
     width: "70%",
