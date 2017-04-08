@@ -9,7 +9,7 @@ const {
     set,
     $,
     inject: { service },
-    run: { schedule, cancel, bind, later, throttle },
+    run: { schedule, cancel, bind, later },
 } = Ember;
 
 const styleProps = [
@@ -141,7 +141,7 @@ export default Component.extend({
     _onRootNodeTouch(evt) {
         let runOpenMenuSlightly;
         const $rootNode = $(get(this, "rootNodeSelector"));
-        const onTouchMove = (event) => {
+        const onTouchMove = bind(this, (event) => {
             if (runOpenMenuSlightly) {
                 cancel(runOpenMenuSlightly);
             }
@@ -153,12 +153,9 @@ export default Component.extend({
                 }
                 this._updateProgress(event.originalEvent.touches[0].pageX);
             }
-        };
-        const throttledOnTouchMove = (event) => {
-            throttle(this, onTouchMove, event, 10);
-        };
+        });
         const onTouchEnd = bind(this, (event) => {
-            $rootNode.off("touchmove", throttledOnTouchMove);
+            $rootNode.off("touchmove", onTouchMove);
             $rootNode.off("touchend", onTouchEnd);
             set(this, "isTouching", false);
 
@@ -183,7 +180,7 @@ export default Component.extend({
                 }, get(this, "slightlyOpenAfter"));
             }
 
-            $rootNode.on("touchmove", throttledOnTouchMove);
+            $rootNode.on("touchmove", onTouchMove);
             $rootNode.on("touchend", onTouchEnd);
         }
     },
