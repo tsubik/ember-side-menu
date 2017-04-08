@@ -1,4 +1,5 @@
 import Ember from "ember";
+import { createGesture } from "ember-side-menu/utils/gestures";
 
 const {
     Component,
@@ -27,9 +28,11 @@ export default Component.extend({
     isClosed: alias("sideMenu.isClosed"),
     isSlightlyOpen: alias("sideMenu.isSlightlyOpen"),
     isTouching: false,
+    disableMenu: false,
 
     attributeBindings: ["style"],
     classNames: ["side-menu"],
+    classNameBindings: ["isInProgress:disable-scroll"],
 
     side: "left",
     width: "70%",
@@ -120,6 +123,15 @@ export default Component.extend({
         schedule("afterRender", () => {
             set(this, "onTouchStart", onRootNodeTouch);
         });
+        const onMenuScroll = () => {
+            if (!get(this, "disableMenu") && !get(this, "isInProgress")) {
+                set(this, "disableMenu", true);
+                this.$().one("touchend", () => {
+                    set(this, "disableMenu", false);
+                });
+            }
+        };
+        this.$().on("scroll", onMenuScroll);
     },
 
     _setupObservers() {
@@ -146,18 +158,28 @@ export default Component.extend({
                 cancel(runOpenMenuSlightly);
             }
 
+            if (get(this, "disableMenu")) return;
+
             if (!(this._isTouchWithin(event, get(this, "slightlyOpenWidth"))
-                  && this.get("isClosed"))) {
+                  && get(this, "isClosed"))) {
                 if (get(this, "isSlightlyOpen")) {
                     set(this, "isSlightlyOpen", false);
                 }
-                this._updateProgress(event.originalEvent.touches[0].pageX);
+
+                if (!get(this, "isInProgress") && this._isInitialGesture(event)) {
+                    set(this, "isInProgress", true);
+                }
+
+                if (get(this, "isInProgress")) {
+                    this._updateProgress(event.originalEvent.touches[0].pageX);
+                }
             }
         });
         const onTouchEnd = bind(this, (event) => {
             $rootNode.off("touchmove", onTouchMove);
             $rootNode.off("touchend", onTouchEnd);
             set(this, "isTouching", false);
+            set(this, "isInProgress", false);
 
             if (runOpenMenuSlightly) {
                 cancel(runOpenMenuSlightly);
@@ -168,7 +190,7 @@ export default Component.extend({
 
         set(this, "isTouching", true);
 
-        if (this._needToTrack(evt)) {
+        if (this._validToStartTracking(evt)) {
             set(this, "touchStartEvent", evt);
             this._setTouchOffset(evt);
 
@@ -219,16 +241,11 @@ export default Component.extend({
         const progress = get(this, "progress");
         const touchStartEvent = get(this, "touchStartEvent");
         const side = get(this, "side");
-        const velocityX = this._calculateVelocityX(
-            touchStartEvent.originalEvent.touches[0].pageX,
-            touchStartEvent.originalEvent.timeStamp,
-            event.originalEvent.changedTouches[0].pageX,
-            event.originalEvent.timeStamp
-        );
+        const gesture = createGesture(touchStartEvent, event);
         const minClosingVelocity = 0.3;
         const autoCompleteThreshold = 50;
-        const isSwipingLeft = velocityX > minClosingVelocity;
-        const isSwipingRight = velocityX < -minClosingVelocity;
+        const isSwipingLeft = gesture.velocityX > minClosingVelocity;
+        const isSwipingRight = gesture.velocityX < -minClosingVelocity;
 
         const isClosingMovement = (side === "left" && isSwipingLeft) ||
                   (side === "right" && isSwipingRight);
@@ -242,9 +259,17 @@ export default Component.extend({
         }
     },
 
-    _needToTrack(event) {
+    _validToStartTracking(event) {
         return get(this, "isOpen") ||
             this._isTouchWithin(event, get(this, "initialTapAreaWidth"));
+    },
+
+    _isInitialGesture(event) {
+        const touchStartEvent = get(this, "touchStartEvent");
+        const gesture = createGesture(touchStartEvent, event);
+        const minTime = 10; // 10 ms minimum time of gesture
+        const isMoreSwiping = Math.abs(gesture.velocityX) > Math.abs(gesture.velocityY);
+        return gesture.time > minTime && isMoreSwiping;
     },
 
     _isTouchWithin(event, areaWidth) {
@@ -253,12 +278,5 @@ export default Component.extend({
 
         return (side === "left" && pageX < areaWidth) ||
             (side === "right" && pageX > window.innerWidth - areaWidth);
-    },
-
-    _calculateVelocityX(startX, startTimeStamp, endX, endTimeStamp) {
-        const deltaX = startX - endX;
-        const deltaTime = endTimeStamp - startTimeStamp;
-
-        return deltaX / deltaTime;
     },
 });
