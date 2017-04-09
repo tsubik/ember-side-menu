@@ -10,7 +10,8 @@
     "build": "ember build",
     "start": "ember server",
     "test": "ember try:each",
-    "deploy": "ember github-pages:commit --message 'demo page release'"
+    "deploy": "ember github-pages:commit --message 'demo page release'",
+    "deploy:test": "rm -rf dist/ && ember build && surge -p ./dist -d esm-test.surge.sh"
   },
   "repository": {
     "type": "git",
