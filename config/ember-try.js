@@ -3,7 +3,9 @@ module.exports = {
     scenarios: [
         {
             name: "default",
-            dependencies: { }
+            npm: {
+                devDependencies: {}
+            }
         },
         {
             name: "ember-1.13",
@@ -14,16 +16,26 @@ module.exports = {
                 resolutions: {
                     "ember": "~1.13.0"
                 }
+            },
+            npm: {
+                devDependencies: {
+                    "ember-source": null
+                }
             }
         },
         {
             name: "ember-2-4-lts",
             bower: {
                 dependencies: {
-                    "ember": "~2.4.0"
+                    "ember": "components/ember#lts-2-4"
                 },
                 resolutions: {
-                    "ember": "~2.4.0"
+                    "ember": "lts-2-4"
+                }
+            },
+            npm: {
+                devDependencies: {
+                    "ember-source": null
                 }
             }
         },
@@ -31,38 +43,64 @@ module.exports = {
             name: "ember-2-8-lts",
             bower: {
                 dependencies: {
-                    "ember": "~2.8.0"
+                    "ember": "components/ember#lts-2-8"
                 },
                 resolutions: {
-                    "ember": "~2.8.0"
+                    "ember": "lts-2-8"
+                }
+            },
+            npm: {
+                devDependencies: {
+                    "ember-source": null
                 }
             }
         },
         {
             name: "ember-release",
-            dependencies: {
-                "ember": "components/ember#release"
+            bower: {
+                dependencies: {
+                    "ember": "components/ember#release"
+                },
+                resolutions: {
+                    "ember": "release"
+                }
             },
-            resolutions: {
-                "ember": "release"
+            npm: {
+                devDependencies: {
+                    "ember-source": null
+                }
             }
         },
         {
             name: "ember-beta",
-            dependencies: {
-                "ember": "components/ember#beta"
+            bower: {
+                dependencies: {
+                    "ember": "components/ember#beta"
+                },
+                resolutions: {
+                    "ember": "beta"
+                }
             },
-            resolutions: {
-                "ember": "beta"
+            npm: {
+                devDependencies: {
+                    "ember-source": null
+                }
             }
         },
         {
             name: "ember-canary",
-            dependencies: {
-                "ember": "components/ember#canary"
+            bower: {
+                dependencies: {
+                    "ember": "components/ember#canary"
+                },
+                resolutions: {
+                    "ember": "canary"
+                }
             },
-            resolutions: {
-                "ember": "canary"
+            npm: {
+                devDependencies: {
+                    "ember-source": null
+                }
             }
         }
     ]
