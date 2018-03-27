@@ -1,13 +1,8 @@
-import Ember from "ember";
-
-const {
-    Component,
-    computed,
-    String: { htmlSafe },
-    computed: { oneWay },
-    inject: { service },
-    get,
-} = Ember;
+import Component from '@ember/component';
+import { htmlSafe } from '@ember/string';
+import { oneWay } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import { get, computed } from '@ember/object';
 
 export default Component.extend({
     sideMenu: service(),
@@ -40,5 +35,5 @@ export default Component.extend({
 
     touchEnd() {
         get(this, "sideMenu").close();
-    },
+    }
 });

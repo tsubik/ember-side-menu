@@ -1,4 +1,5 @@
-import Ember from "ember";
+import Application from '@ember/application';
+import { run } from '@ember/runloop';
 import SideMenuInitializer from "../../../initializers/side-menu";
 import { module, test } from "qunit";
 
@@ -6,11 +7,11 @@ let application;
 
 module("Unit | Initializer | side menu", {
     beforeEach() {
-        Ember.run(function () {
-            application = Ember.Application.create();
+        run(function () {
+            application = Application.create();
             application.deferReadiness();
         });
-    },
+    }
 });
 
 // Replace this with your real tests.

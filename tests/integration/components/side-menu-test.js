@@ -1,15 +1,13 @@
-import Ember from "ember";
+import $ from 'jquery';
 import { moduleForComponent, test } from "ember-qunit";
 import hbs from "htmlbars-inline-precompile";
-
-const { $ } = Ember;
 
 moduleForComponent("side-menu", "Integration | Component | side menu", {
     integration: true,
 
     beforeEach() {
         this.inject.service("side-menu", { as: "sideMenu" });
-    },
+    }
 });
 
 test("it renders", function (assert) {

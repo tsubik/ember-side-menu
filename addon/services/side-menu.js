@@ -1,11 +1,6 @@
-import Ember from "ember";
-
-const {
-    computed: { equal },
-    get,
-    set,
-    Service,
-} = Ember;
+import { equal } from '@ember/object/computed';
+import { set, get } from '@ember/object';
+import Service from '@ember/service';
 
 export default Service.extend({
     // progress 0-100 %
@@ -30,5 +25,5 @@ export default Service.extend({
         } else {
             this.open();
         }
-    },
+    }
 });
