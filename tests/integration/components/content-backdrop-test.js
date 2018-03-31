@@ -6,7 +6,7 @@ moduleForComponent("content-backdrop", "Integration | Component | content backdr
 
     beforeEach() {
         this.inject.service("side-menu", { as: "sideMenu" });
-    },
+    }
 });
 
 test("it renders", function (assert) {

@@ -6,7 +6,7 @@ moduleForComponent("side-menu-toggle", "Integration | Component | side menu togg
 
     beforeEach() {
         this.inject.service("side-menu", { as: "sideMenu" });
-    },
+    }
 });
 
 test("it renders", function (assert) {

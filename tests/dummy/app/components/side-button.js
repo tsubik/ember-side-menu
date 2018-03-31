@@ -1,7 +1,8 @@
-import Ember from "ember";
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 import layout from "../templates/components/side-button";
 
-export default Ember.Component.extend({
+export default Component.extend({
     layout,
 
     tagName: "a",
@@ -9,11 +10,11 @@ export default Ember.Component.extend({
     classNames: ["side-button"],
     classNameBindings: ["isActive:active", "side"],
 
-    isActive: Ember.computed("side", "actualSide", function () {
+    isActive: computed("side", "actualSide", function () {
         return this.get("side") === this.get("actualSide");
     }),
 
     click() {
         this.set("actualSide", this.get("side"));
-    },
+    }
 });

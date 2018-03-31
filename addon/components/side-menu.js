@@ -1,23 +1,17 @@
-import Ember from "ember";
+import Component from '@ember/component';
+import { alias } from '@ember/object/computed';
+import { htmlSafe } from '@ember/string';
+import { set, get, computed } from '@ember/object';
+import $ from 'jquery';
+import { inject as service } from '@ember/service';
+import { later, bind, cancel, schedule } from '@ember/runloop';
 import { createGesture } from "ember-side-menu/utils/gestures";
-
-const {
-    Component,
-    computed,
-    computed: { alias },
-    String: { htmlSafe },
-    get,
-    set,
-    $,
-    inject: { service },
-    run: { schedule, cancel, bind, later },
-} = Ember;
 
 const styleProps = [
     "shadowStyle",
     "positionStyle",
     "transitionStyle",
-    "transformStyle",
+    "transformStyle"
 ];
 
 export default Component.extend({
@@ -278,5 +272,5 @@ export default Component.extend({
 
         return (side === "left" && pageX < areaWidth) ||
             (side === "right" && pageX > window.innerWidth - areaWidth);
-    },
+    }
 });

@@ -20,6 +20,6 @@ export function createGesture(startEvent, endEvent) {
     return {
         time,
         velocityX,
-        velocityY,
+        velocityY
     };
 }

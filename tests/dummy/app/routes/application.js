@@ -1,11 +1,11 @@
-import Ember from "ember";
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
     model() {
         return {
             options: [
-                { id: "slide", text: "Slide" },
-            ],
+                { id: "slide", text: "Slide" }
+            ]
         };
     },
 
@@ -23,6 +23,6 @@ export default Ember.Route.extend({
         changeMenu(option) {
             const controller = this.controllerFor("application");
             controller.set("activeOption", option);
-        },
-    },
+        }
+    }
 });
