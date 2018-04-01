@@ -43,10 +43,6 @@ before_install:
   - npm install -g npm@4 bower
   - npm --version
 
-install:
-  - yarn
-  - bower install
-
 script:
   - npm run lint:js
   # Usually, it's ok to finish the test scenario without reverting
