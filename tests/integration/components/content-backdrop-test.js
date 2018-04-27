@@ -1,49 +1,51 @@
-import { moduleForComponent, test } from "ember-qunit";
+import { find, render } from '@ember/test-helpers';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from "ember-qunit";
 import hbs from "htmlbars-inline-precompile";
 
-moduleForComponent("content-backdrop", "Integration | Component | content backdrop", {
-    integration: true,
+module("Integration | Component | content backdrop", function(hooks) {
+  setupRenderingTest(hooks);
 
-    beforeEach() {
-        this.inject.service("side-menu", { as: "sideMenu" });
-    }
-});
+  hooks.beforeEach(function() {
+      this.sideMenu = this.owner.lookup('service:side-menu');
+  });
 
-test("it renders", function (assert) {
-    this.render(hbs`{{content-backdrop}}`);
+  test("it renders", async function(assert) {
+      await render(hbs`{{content-backdrop}}`);
 
-    assert.equal(this.$().text().trim(), "");
-});
+      assert.equal(find('*').textContent.trim(), "");
+  });
 
-test("should not be visible if menu is closed", function (assert) {
-    assert.expect(1);
+  test("should not be visible if menu is closed", async function(assert) {
+      assert.expect(1);
 
-    this.render(hbs`{{content-backdrop}}`);
+      await render(hbs`{{content-backdrop}}`);
 
-    assert.ok(this.$(".content-backdrop").attr("style").indexOf("visibility: hidden") > -1);
-});
+      assert.ok(find(".content-backdrop").getAttribute("style").indexOf("visibility: hidden") > -1);
+  });
 
-test("should be visible if menu is open", function (assert) {
-    assert.expect(1);
+  test("should be visible if menu is open", async function(assert) {
+      assert.expect(1);
 
-    this.set("sideMenu.progress", 100);
-    this.render(hbs`{{content-backdrop}}`);
+      this.set("sideMenu.progress", 100);
+      await render(hbs`{{content-backdrop}}`);
 
-    assert.ok(this.$(".content-backdrop").attr("style").indexOf("visibility: visible") > -1);
-});
+      assert.ok(find(".content-backdrop").getAttribute("style").indexOf("visibility: visible") > -1);
+  });
 
-test("should have opacity depended on menu opening progress", function (assert) {
-    assert.expect(2);
+  test("should have opacity depended on menu opening progress", async function(assert) {
+      assert.expect(2);
 
-    this.set("sideMenu.progress", 40);
-    this.render(hbs`{{content-backdrop}}`);
+      this.set("sideMenu.progress", 40);
+      await render(hbs`{{content-backdrop}}`);
 
-    assert.ok(
-        this.$(".content-backdrop").attr("style").indexOf("opacity: 0.4") > -1, "opacity 0.4"
-    );
+      assert.ok(
+          find(".content-backdrop").getAttribute("style").indexOf("opacity: 0.4") > -1, "opacity 0.4"
+      );
 
-    this.set("sideMenu.progress", 70);
-    assert.ok(
-        this.$(".content-backdrop").attr("style").indexOf("opacity: 0.7") > -1, "opacity 0.7"
-    );
+      this.set("sideMenu.progress", 70);
+      assert.ok(
+          find(".content-backdrop").getAttribute("style").indexOf("opacity: 0.7") > -1, "opacity 0.7"
+      );
+  });
 });

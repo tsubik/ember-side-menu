@@ -1,51 +1,53 @@
-import { moduleFor, test } from "ember-qunit";
+import { module, test } from 'qunit';
+import { setupTest } from "ember-qunit";
 
-moduleFor("service:side-menu", "Unit | Service | side menu", {
-});
+module("Unit | Service | side menu", function(hooks) {
+  setupTest(hooks);
 
-test("it exists", function (assert) {
-    const service = this.subject();
+  test("it exists", function (assert) {
+      const service = this.owner.lookup("service:side-menu");
 
-    assert.ok(service);
-});
+      assert.ok(service);
+  });
 
-test("close should close menu", function (assert) {
-    assert.expect(2);
+  test("close should close menu", function (assert) {
+      assert.expect(2);
 
-    const service = this.subject();
-    service.set("progress", 100);
+      const service = this.owner.lookup("service:side-menu");
+      service.set("progress", 100);
 
-    assert.ok(service.get("isOpen"));
+      assert.ok(service.get("isOpen"));
 
-    service.close();
+      service.close();
 
-    assert.ok(service.get("isClosed"));
-});
+      assert.ok(service.get("isClosed"));
+  });
 
-test("open should open menu", function (assert) {
-    assert.expect(2);
+  test("open should open menu", function (assert) {
+      assert.expect(2);
 
-    const service = this.subject();
+      const service = this.owner.lookup("service:side-menu");
 
-    assert.ok(service.get("isClosed"));
+      assert.ok(service.get("isClosed"));
 
-    service.open();
+      service.open();
 
-    assert.ok(service.get("isOpen"));
-});
+      assert.ok(service.get("isOpen"));
+  });
 
-test("toggle should toggle menu", function (assert) {
-    assert.expect(3);
+  test("toggle should toggle menu", function (assert) {
+      assert.expect(3);
 
-    const service = this.subject();
+      const service = this.owner.lookup("service:side-menu");
 
-    assert.ok(service.get("isClosed"));
+      assert.ok(service.get("isClosed"));
 
-    service.toggle();
+      service.toggle();
 
-    assert.ok(service.get("isOpen"));
+      assert.ok(service.get("isOpen"));
 
-    service.toggle();
+      service.toggle();
 
-    assert.ok(service.get("isClosed"));
+      assert.ok(service.get("isClosed"));
+  });
 });
