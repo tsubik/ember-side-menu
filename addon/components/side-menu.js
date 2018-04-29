@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import { alias } from '@ember/object/computed';
 import { htmlSafe } from '@ember/string';
 import { set, get, computed } from '@ember/object';
-import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { later, bind, cancel, schedule } from '@ember/runloop';
 import { createGesture } from "ember-side-menu/utils/gestures";
@@ -85,12 +84,12 @@ export default Component.extend({
 
         if (isClosed === wasClosed) return;
 
-        const $rootNode = $(get(this, "rootNodeSelector"));
+        const rootNode = document.querySelector(get(this, "rootNodeSelector"));
 
         if (isClosed) {
-            $rootNode.removeClass("disable-scroll");
+            rootNode.classList.remove("disable-scroll");
         } else {
-            $rootNode.addClass("disable-scroll");
+            rootNode.classList.add("disable-scroll");
         }
 
         set(this, "wasClosed", isClosed);
@@ -109,23 +108,25 @@ export default Component.extend({
     },
 
     _setupEventListeners() {
-        const $rootNode = $(get(this, "rootNodeSelector"));
+        const rootNode = document.querySelector(get(this, "rootNodeSelector"));
         const onRootNodeTouch = bind(this, this._onRootNodeTouch);
 
-        $rootNode.on("touchstart", onRootNodeTouch);
+        rootNode.addEventListener("touchstart", onRootNodeTouch);
 
         schedule("afterRender", () => {
             set(this, "onTouchStart", onRootNodeTouch);
         });
         const onMenuScroll = () => {
             if (!get(this, "disableMenu") && !get(this, "isInProgress")) {
-                set(this, "disableMenu", true);
-                this.$().one("touchend", () => {
+                const enableMenuOnce = (e) => {
                     set(this, "disableMenu", false);
-                });
+                    e.target.removeEventListener(e.type, enableMenuOnce);
+                };
+                set(this, "disableMenu", true);
+                get(this, "element").addEventListener("touchend", enableMenuOnce);
             }
         };
-        this.$().on("scroll", onMenuScroll);
+        get(this, "element").addEventListener("scroll", onMenuScroll);
     },
 
     _setupObservers() {
@@ -139,15 +140,15 @@ export default Component.extend({
 
     _removeEventListeners() {
         const onTouchStart = get(this, "onTouchStart");
-        const $rootNode = $(get(this, "rootNodeSelector"));
+        const rootNode = document.querySelector(get(this, "rootNodeSelector"));
 
-        $rootNode.off("touchstart", onTouchStart);
+        rootNode.removeEventListener("touchstart", onTouchStart);
     },
 
     _onRootNodeTouch(evt) {
         let runOpenMenuSlightly;
-        const $rootNode = $(get(this, "rootNodeSelector"));
-        const onTouchMove = bind(this, (event) => {
+        const rootNode = document.querySelector(get(this, "rootNodeSelector"));
+        const onTouchMove = (event) => {
             if (runOpenMenuSlightly) {
                 cancel(runOpenMenuSlightly);
             }
@@ -165,13 +166,13 @@ export default Component.extend({
                 }
 
                 if (get(this, "isInProgress")) {
-                    this._updateProgress(event.originalEvent.touches[0].pageX);
+                    this._updateProgress(event.touches[0].pageX);
                 }
             }
-        });
-        const onTouchEnd = bind(this, (event) => {
-            $rootNode.off("touchmove", onTouchMove);
-            $rootNode.off("touchend", onTouchEnd);
+        };
+        const onTouchEnd = (event) => {
+            rootNode.removeEventListener("touchmove", onTouchMove);
+            rootNode.removeEventListener("touchend", onTouchEnd);
             set(this, "isTouching", false);
             set(this, "isInProgress", false);
 
@@ -180,7 +181,7 @@ export default Component.extend({
             }
 
             this._completeMenuTransition(event);
-        });
+        };
 
         set(this, "isTouching", true);
 
@@ -196,14 +197,14 @@ export default Component.extend({
                 }, get(this, "slightlyOpenAfter"));
             }
 
-            $rootNode.on("touchmove", onTouchMove);
-            $rootNode.on("touchend", onTouchEnd);
+            rootNode.addEventListener("touchmove", onTouchMove);
+            rootNode.addEventListener("touchend", onTouchEnd);
         }
     },
 
     _setTouchOffset(event) {
         const isOpen = get(this, "isOpen");
-        const pageX = event.originalEvent.touches[0].pageX;
+        const pageX = event.touches[0].pageX;
         const side = get(this, "side");
 
         if (isOpen) {
@@ -268,7 +269,7 @@ export default Component.extend({
 
     _isTouchWithin(event, areaWidth) {
         const side = get(this, "side");
-        const pageX = event.originalEvent.touches[0].pageX;
+        const pageX = event.touches[0].pageX;
 
         return (side === "left" && pageX < areaWidth) ||
             (side === "right" && pageX > window.innerWidth - areaWidth);
