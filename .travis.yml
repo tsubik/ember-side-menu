@@ -42,6 +42,7 @@ matrix:
 
 before_install:
   - npm config set spin false
+  - npm uninstall -D husky lint-staged
   - npm install -g npm@4 bower
   - npm --version
 
