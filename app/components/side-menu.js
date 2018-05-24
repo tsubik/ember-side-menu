@@ -1,1 +1,1 @@
-export { default } from "ember-side-menu/components/side-menu";
+export { default } from 'ember-side-menu/components/side-menu';

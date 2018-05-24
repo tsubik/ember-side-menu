@@ -3,14 +3,14 @@ import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
-    sideMenu: service(),
+  sideMenu: service(),
 
-    classNameBindings: ["side"],
-    classNames: ["side-menu-toggle"],
+  classNameBindings: ['side'],
+  classNames: ['side-menu-toggle'],
 
-    side: "left",
+  side: 'left',
 
-    click() {
-        get(this, "sideMenu").toggle();
-    }
+  click() {
+    get(this, 'sideMenu').toggle();
+  }
 });

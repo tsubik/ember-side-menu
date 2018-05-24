@@ -3,9 +3,9 @@ import { inject as service } from '@ember/service';
 import LinkComponent from '@ember/routing/link-component';
 
 export default LinkComponent.extend({
-    sideMenu: service(),
+  sideMenu: service(),
 
-    click() {
-        get(this, "sideMenu").close();
-    }
+  click() {
+    get(this, 'sideMenu').close();
+  }
 });

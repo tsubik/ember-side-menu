@@ -1,1 +1,1 @@
-export { default } from "ember-side-menu/components/content-backdrop";
+export { default } from 'ember-side-menu/components/content-backdrop';

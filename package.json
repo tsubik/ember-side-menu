@@ -10,6 +10,8 @@
     "build": "ember build",
     "lint:js": "eslint ./*.js addon addon-test-support app blueprints config lib server test-support tests",
     "start": "ember serve",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config package.json --write '{app,addon,config,tests}/**/*.{js,json}'",
     "test": "ember test",
     "test:all": "ember try:each",
     "deploy": "ember github-pages:commit --message 'demo page release'",
@@ -53,8 +55,13 @@
     "ember-source": "~3.1.0",
     "ember-source-channel-url": "^1.0.1",
     "ember-try": "^0.2.23",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-ember": "^5.2.0",
-    "loader.js": "^4.2.3"
+    "eslint-plugin-prettier": "^2.6.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.2",
+    "loader.js": "^4.2.3",
+    "prettier": "^1.12.1"
   },
   "keywords": [
     "ember-addon",
@@ -71,5 +78,12 @@
   "ember-addon": {
     "configPath": "tests/dummy/config",
     "demoURL": "https://tsubik.com/ember-side-menu"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true
+  },
+  "lint-staged": {
+    "*.{js,json,css}": ["prettier --config package.json --write", "git add"]
   }
 }
