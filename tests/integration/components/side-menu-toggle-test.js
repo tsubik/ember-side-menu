@@ -1,45 +1,47 @@
-import { moduleForComponent, test } from "ember-qunit";
+import { click, find, render } from '@ember/test-helpers';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from "ember-qunit";
 import hbs from "htmlbars-inline-precompile";
 
-moduleForComponent("side-menu-toggle", "Integration | Component | side menu toggle", {
-    integration: true,
+module("Integration | Component | side menu toggle", function(hooks) {
+  setupRenderingTest(hooks);
 
-    beforeEach() {
-        this.inject.service("side-menu", { as: "sideMenu" });
-    }
-});
+  hooks.beforeEach(function() {
+      this.sideMenu = this.owner.lookup('service:side-menu');
+  });
 
-test("it renders", function (assert) {
-    this.render(hbs`{{side-menu-toggle}}`);
+  test("it renders", async function(assert) {
+      await render(hbs`{{side-menu-toggle}}`);
 
-    assert.equal(this.$().text().trim(), "");
-});
+      assert.equal(find('*').textContent.trim(), "");
+  });
 
-test("should change side", function (assert) {
-    assert.expect(2);
+  test("should change side", async function(assert) {
+      assert.expect(2);
 
-    this.set("side", "left");
-    this.render(hbs`{{side-menu-toggle side=side}}`);
+      this.set("side", "left");
+      await render(hbs`{{side-menu-toggle side=side}}`);
 
-    assert.ok(this.$(".side-menu-toggle").hasClass("left"), "left side");
+      assert.ok(find(".side-menu-toggle").classList.contains("left"), "left side");
 
-    this.set("side", "right");
+      this.set("side", "right");
 
-    assert.ok(this.$(".side-menu-toggle").hasClass("right"), "right side");
-});
+      assert.ok(find(".side-menu-toggle").classList.contains("right"), "right side");
+  });
 
-test("click should toggle menu", function (assert) {
-    assert.expect(3);
+  test("click should toggle menu", async function(assert) {
+      assert.expect(3);
 
-    this.render(hbs`{{side-menu-toggle}}`);
+      await render(hbs`{{side-menu-toggle}}`);
 
-    assert.ok(this.get("sideMenu.isClosed"), "initially closed");
+      assert.ok(this.get("sideMenu.isClosed"), "initially closed");
 
-    this.$(".side-menu-toggle").click();
+      await click(".side-menu-toggle");
 
-    assert.ok(this.get("sideMenu.isOpen"), "after click is open");
+      assert.ok(this.get("sideMenu.isOpen"), "after click is open");
 
-    this.$(".side-menu-toggle").click();
+      await click(".side-menu-toggle");
 
-    assert.ok(this.get("sideMenu.isClosed"), "another click closing");
+      assert.ok(this.get("sideMenu.isClosed"), "another click closing");
+  });
 });

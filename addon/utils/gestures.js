@@ -5,15 +5,15 @@ export function calculateVelocity(start, end, deltaTime) {
 }
 
 export function createGesture(startEvent, endEvent) {
-    const time = endEvent.originalEvent.timeStamp - startEvent.originalEvent.timeStamp;
+    const time = endEvent.timeStamp - startEvent.timeStamp;
     const velocityX = calculateVelocity(
-        startEvent.originalEvent.touches[0].pageX,
-        endEvent.originalEvent.changedTouches[0].pageX,
+        startEvent.touches[0].pageX,
+        endEvent.changedTouches[0].pageX,
         time
     );
     const velocityY = calculateVelocity(
-        startEvent.originalEvent.touches[0].pageY,
-        endEvent.originalEvent.changedTouches[0].pageY,
+        startEvent.touches[0].pageY,
+        endEvent.changedTouches[0].pageY,
         time
     );
 
