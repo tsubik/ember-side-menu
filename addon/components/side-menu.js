@@ -212,7 +212,7 @@ export default Component.extend({
     const touchOffset = get(this, 'touchOffset');
     const side = get(this, 'side');
     const relativeX = side === 'left' ? touchPageX : window.innerWidth - touchPageX;
-    const progress = Math.min((relativeX + touchOffset) / elementWidth * 100, 100);
+    const progress = Math.min(100 * ((relativeX + touchOffset) / elementWidth), 100);
 
     set(this, 'progress', progress);
   },
