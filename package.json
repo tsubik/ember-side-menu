@@ -57,7 +57,7 @@
     "ember-try": "^0.2.23",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-ember": "^5.2.0",
-    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-prettier": "2.6.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.1.2",
     "loader.js": "^4.2.3",
@@ -84,6 +84,9 @@
     "singleQuote": true
   },
   "lint-staged": {
-    "*.{js,json,css}": ["prettier --config package.json --write", "git add"]
+    "*.{js,json,css}": [
+      "prettier --config package.json --write",
+      "git add"
+    ]
   }
 }
