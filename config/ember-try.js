@@ -8,78 +8,34 @@ module.exports = function() {
       useYarn: true,
       scenarios: [
         {
-          name: 'ember-1.13',
-          bower: {
-            dependencies: {
-              ember: '~1.13.0'
-            },
-            resolutions: {
-              ember: '~1.13.0'
-            }
-          },
-          npm: {
-            devDependencies: {
-              'ember-source': null,
-              'ember-native-dom-event-dispatcher': null
-            }
-          }
-        },
-        {
-          name: 'ember-2-4-lts',
-          bower: {
-            dependencies: {
-              ember: 'components/ember#lts-2-4'
-            },
-            resolutions: {
-              ember: 'lts-2-4'
-            }
-          },
-          npm: {
-            devDependencies: {
-              'ember-source': null,
-              'ember-native-dom-event-dispatcher': null
-            }
-          }
-        },
-        {
-          name: 'ember-2-8-lts',
-          bower: {
-            dependencies: {
-              ember: 'components/ember#lts-2-8'
-            },
-            resolutions: {
-              ember: 'lts-2-8'
-            }
-          },
-          npm: {
-            devDependencies: {
-              'ember-source': null,
-              'ember-native-dom-event-dispatcher': null
-            }
-          }
-        },
-        {
-          name: 'ember-lts-2.12',
-          npm: {
-            devDependencies: {
-              'ember-source': '~2.12.0',
-              'ember-native-dom-event-dispatcher': null
-            }
-          }
-        },
-        {
-          name: 'ember-lts-2.16',
-          npm: {
-            devDependencies: {
-              'ember-source': '~2.16.0'
-            }
-          }
-        },
-        {
           name: 'ember-lts-2.18',
           npm: {
             devDependencies: {
               'ember-source': '~2.18.0'
+            }
+          }
+        },
+        {
+          name: 'ember-lts-3.12',
+          npm: {
+            devDependencies: {
+              'ember-source': '~3.12.0'
+            }
+          }
+        },
+        {
+          name: 'ember-lts-3.16',
+          npm: {
+            devDependencies: {
+              'ember-source': '~3.16.0'
+            }
+          }
+        },
+        {
+          name: 'ember-lts-3.20',
+          npm: {
+            devDependencies: {
+              'ember-source': '~3.20.0'
             }
           }
         },
@@ -114,6 +70,34 @@ module.exports = function() {
           },
           bower: {
             dependencies: {}
+          }
+        },
+        {
+          name: 'ember-default-with-jquery',
+          env: {
+            EMBER_OPTIONAL_FEATURES: JSON.stringify({
+              'jquery-integration': true
+            })
+          },
+          npm: {
+            devDependencies: {
+              '@ember/jquery': '^0.5.1'
+            }
+          }
+        },
+        {
+          name: 'ember-classic',
+          env: {
+            EMBER_OPTIONAL_FEATURES: JSON.stringify({
+              'application-template-wrapper': true,
+              'default-async-observers': false,
+              'template-only-glimmer-components': false
+            })
+          },
+          npm: {
+            ember: {
+              edition: 'classic'
+            }
           }
         }
       ]

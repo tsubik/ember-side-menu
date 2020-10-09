@@ -22,29 +22,23 @@ env:
   matrix:
     # we recommend new addons test the current and previous LTS
     # as well as latest stable release (bonus points to beta/canary)
-    - EMBER_TRY_SCENARIO=ember-1.13
-    - EMBER_TRY_SCENARIO=ember-2-4-lts
-    - EMBER_TRY_SCENARIO=ember-2-8-lts
-    - EMBER_TRY_SCENARIO=ember-lts-2.12
-    - EMBER_TRY_SCENARIO=ember-lts-2.16
     - EMBER_TRY_SCENARIO=ember-lts-2.18
+    - EMBER_TRY_SCENARIO=ember-lts-3.12
+    - EMBER_TRY_SCENARIO=ember-lts-3.16
+    - EMBER_TRY_SCENARIO=ember-lts-3.20
     - EMBER_TRY_SCENARIO=ember-release
     - EMBER_TRY_SCENARIO=ember-beta
     - EMBER_TRY_SCENARIO=ember-canary
-    - EMBER_TRY_SCENARIO=ember-default
+    - EMBER_TRY_SCENARIO=ember-default-with-jquery
+    - EMBER_TRY_SCENARIO=ember-classic
 
 matrix:
   fast_finish: true
   allow_failures:
     - env: EMBER_TRY_SCENARIO=ember-canary
-    # TODO: remove when https://github.com/emberjs/ember-test-helpers/issues/357 is resolved
-    - env: EMBER_TRY_SCENARIO=ember-1.13
 
 before_install:
-  - npm config set spin false
   - npm uninstall -D husky lint-staged
-  - npm install -g npm@4 bower
-  - npm --version
 
 script:
   - npm run lint:js
