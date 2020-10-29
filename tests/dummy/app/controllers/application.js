@@ -1,8 +1,10 @@
 import Controller from '@ember/controller';
-import { get, computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
 
 export default Controller.extend({
+  sideMenu: service(),
+
   side: 'left',
   mode: 'single',
 
@@ -12,12 +14,6 @@ export default Controller.extend({
   isSingle: equal('mode', 'single'),
   isMulti: equal('mode', 'multi'),
 
-  menu: computed('side', function() {
-    const side = get(this, 'side');
-
-    return side === 'left' ? 'menuLeft' : 'menuRight';
-  }),
-
   actions: {
     changeSide(side) {
       this.set('side', side);
@@ -25,6 +21,10 @@ export default Controller.extend({
 
     changeMode(mode) {
       this.set('mode', mode);
+    },
+
+    close(menuId) {
+      this.get('sideMenu').close(menuId);
     }
   }
 });
