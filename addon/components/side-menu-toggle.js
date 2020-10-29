@@ -11,6 +11,6 @@ export default Component.extend({
   side: 'left',
 
   click() {
-    get(this, 'sideMenu').toggle();
+    get(this, 'sideMenu').toggle(get(this, 'menuId'));
   }
 });

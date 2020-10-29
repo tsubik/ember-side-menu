@@ -1,4 +1,4 @@
-{{#side-menu width="300px" side=side}}
+{{#side-menu id="menuLeft" width="300px" side="left"}}
   <nav class="sm-item-list">
     <a href="">
       <i class="fa fa-fw fa-star-o"></i>
@@ -14,6 +14,11 @@
     <a href="">
       <i class="fa fa-fw fa-comment-o"></i>
       <span>Comments</span></a>
+  </nav>
+{{/side-menu}}
+
+{{#side-menu id="menuRight" width="300px" side="right"}}
+  <nav class="sm-item-list">
     <a href="">
       <i class="fa fa-fw fa-bar-chart-o"></i>
       <span>Analytics</span></a>
@@ -23,28 +28,38 @@
     </a>
   </nav>
 {{/side-menu}}
-{{content-backdrop}}
 
 <div id="outer-container">
-  {{side-menu-toggle side=side}}
+  {{#if isSingle}}
+    {{side-menu-toggle side=side menuId=menu}}
+  {{else}}
+    {{side-menu-toggle side="left" menuId="menuLeft"}}
+    {{side-menu-toggle side="right" menuId="menuRight"}}
+  {{/if}}
 
   <main id="page-wrap">
     <h1><a href="https://github.com/tsubik/ember-side-menu">ember-side-menu</a></h1>
-    {{#side-button side="left" actualSide=side}}Left{{/side-button}}
-    {{#side-button side="right" actualSide=side}}Right{{/side-button}}
-
-    <h2 class="description">
-      Mobile friendly Ember menu component using CSS transitions. More effects and SVG path animations coming soon.
-    </h2>
-
-    <nav class="demo-buttons">
-      {{#each model.options as |option|}}
-        {{menu-style-option option=option activeOption=activeOption action="changeMenu"}}
-      {{/each}}
-    </nav>
 
     <p>
-      Demo page design is literally taken from <a href="https://github.com/negomi/react-burger-menu">react-burger-menu</a>
+      Show single or multiple menu example?
     </p>
+
+    {{#tab-button side="left" active=isSingle click=(action "changeMode" "single")}}Single{{/tab-button}}
+    {{#tab-button side="right" active=isMulti click=(action "changeMode" "multi")}}Multi{{/tab-button}}
+
+    <br/>
+
+    {{#if isSingle}}
+      <p>
+        Choose single menu side.
+      </p>
+
+      {{#tab-button side="left" active=isLeft click=(action "changeSide" "left")}}Left{{/tab-button}}
+      {{#tab-button side="right" active=isRight click=(action "changeSide" "right")}}Right{{/tab-button}}
+    {{/if}}
+
+    <h2 class="description">
+      Mobile friendly Ember menu component.
+    </h2>
   </main>
 </div>

@@ -11,10 +11,11 @@ const styleProps = ['shadowStyle', 'positionStyle', 'transitionStyle', 'transfor
 export default Component.extend({
   sideMenu: service(),
 
-  progress: alias('sideMenu.progress'),
-  isOpen: alias('sideMenu.isOpen'),
-  isClosed: alias('sideMenu.isClosed'),
-  isSlightlyOpen: alias('sideMenu.isSlightlyOpen'),
+  menu: null,
+  progress: alias('menu.progress'),
+  isOpen: alias('menu.isOpen'),
+  isClosed: alias('menu.isClosed'),
+  isSlightlyOpen: alias('menu.isSlightlyOpen'),
   isTouching: false,
   disableMenu: false,
 
@@ -87,14 +88,27 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+    this._initMenu();
     this._setupEventListeners();
     this._setupObservers();
   },
 
   willDestroyElement() {
     this._super(...arguments);
+    this._destroyMenu();
     this._removeEventListeners();
     this._removeObservers();
+  },
+
+  _initMenu() {
+    const sideMenu = get(this, 'sideMenu');
+    const menu = sideMenu.create(get(this, 'id'));
+    set(this, 'menu', menu);
+  },
+
+  _destroyMenu() {
+    const sideMenu = get(this, 'sideMenu');
+    sideMenu.destroy(get(this, 'id'));
   },
 
   _setupEventListeners() {
@@ -212,7 +226,7 @@ export default Component.extend({
     const touchOffset = get(this, 'touchOffset');
     const side = get(this, 'side');
     const relativeX = side === 'left' ? touchPageX : window.innerWidth - touchPageX;
-    const progress = Math.min(100 * ((relativeX + touchOffset) / elementWidth), 100);
+    const progress = Math.min(((relativeX + touchOffset) / elementWidth) * 100, 100);
 
     set(this, 'progress', progress);
   },
@@ -231,9 +245,9 @@ export default Component.extend({
     const isOpeningMovement = (side === 'left' && isSwipingRight) || (side === 'right' && isSwipingLeft);
 
     if (isClosingMovement || progress < autoCompleteThreshold) {
-      get(this, 'sideMenu').close();
+      get(this, 'sideMenu').close(get(this, 'id'));
     } else if (isOpeningMovement || progress >= autoCompleteThreshold) {
-      get(this, 'sideMenu').open();
+      get(this, 'sideMenu').open(get(this, 'id'));
     }
   },
 
