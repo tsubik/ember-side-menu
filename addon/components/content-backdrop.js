@@ -12,6 +12,9 @@ export default Component.extend({
 
   menu: computed('sideMenu.menus', 'menuId', function() {
     const menuId = get(this, 'menuId');
+
+    if (!menuId) return get(this, `sideMenu.firstMenu`);
+
     return get(this, `sideMenu.menus.${menuId}`);
   }),
   progress: oneWay('menu.progress'),
