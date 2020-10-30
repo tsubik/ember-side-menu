@@ -1,63 +1,72 @@
-{{#side-menu id="singleMenu" width="300px" side=side}}
-  <span class="close-button" {{action "close" "singleMenu" on="click"}}></span>
+{{#if isSingle}}
+  {{#side-menu id="singleMenu" width="300px" side=side}}
+    <span class="close-button" {{action "close" "singleMenu" on="click"}}></span>
 
-  <nav class="sm-item-list">
-    <a href="">
-      <i class="fa fa-fw fa-star-o"></i>
-      <span>Favorites</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-bell-o"></i>
-      <span>Alerts</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-envelope-o"></i>
-      <span>Messages</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-comment-o"></i>
-      <span>Comments</span>
-    </a>
-  </nav>
-{{/side-menu}}
+    <nav class="sm-item-list">
+      <a href="">
+        <i class="fa fa-fw fa-star-o"></i>
+        <span>Favorites</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-bell-o"></i>
+        <span>Alerts</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-envelope-o"></i>
+        <span>Messages</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-comment-o"></i>
+        <span>Comments</span>
+      </a>
+    </nav>
+  {{/side-menu}}
 
-{{#side-menu id="menuLeft" width="300px" side="left"}}
-  <span class="close-button" {{action "close" "menuLeft" on="click"}}></span>
+  {{content-backdrop menuId="singleMenu"}}
+{{else}}
+  {{#side-menu id="menuLeft" width="300px" side="left"}}
+    <span class="close-button" {{action "close" "menuLeft" on="click"}}></span>
 
-  <nav class="sm-item-list">
-    <a href="">
-      <i class="fa fa-fw fa-star-o"></i>
-      <span>Favorites</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-bell-o"></i>
-      <span>Alerts</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-envelope-o"></i>
-      <span>Messages</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-comment-o"></i>
-      <span>Comments</span>
-    </a>
-  </nav>
-{{/side-menu}}
+    <nav class="sm-item-list">
+      <a href="">
+        <i class="fa fa-fw fa-star-o"></i>
+        <span>Favorites</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-bell-o"></i>
+        <span>Alerts</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-envelope-o"></i>
+        <span>Messages</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-comment-o"></i>
+        <span>Comments</span>
+      </a>
+    </nav>
+  {{/side-menu}}
 
-{{#side-menu id="menuRight" width="300px" side="right"}}
-  <span class="close-button" {{action "close" "menuRight" on="click"}}></span>
+  {{#side-menu id="menuRight" width="300px" side="right"}}
+    <span class="close-button" {{action "close" "menuRight" on="click"}}></span>
 
-  <nav class="sm-item-list">
-    <a href="">
-      <i class="fa fa-fw fa-bar-chart-o"></i>
-      <span>Analytics</span>
-    </a>
-    <a href="">
-      <i class="fa fa-fw fa-newspaper-o"></i>
-      <span>Reading List</span>
-    </a>
-  </nav>
-{{/side-menu}}
+    <nav class="sm-item-list">
+      <a href="">
+        <i class="fa fa-fw fa-bar-chart-o"></i>
+        <span>Analytics</span>
+      </a>
+      <a href="">
+        <i class="fa fa-fw fa-newspaper-o"></i>
+        <span>Reading List</span>
+      </a>
+    </nav>
+  {{/side-menu}}
+
+  {{content-backdrop menuId="menuLeft"}}
+  {{content-backdrop menuId="menuRight"}}
+{{/if}}
+
+
 
 <div id="outer-container">
   {{#if isSingle}}

@@ -1,16 +1,20 @@
 import Component from '@ember/component';
 import { htmlSafe } from '@ember/string';
-import { oneWay } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { get, computed } from '@ember/object';
+import { oneWay } from '@ember/object/computed';
 
 export default Component.extend({
   sideMenu: service(),
 
-  progress: oneWay('sideMenu.progress'),
-
   attributeBindings: ['style'],
   classNames: ['content-backdrop'],
+
+  menu: computed('sideMenu.menus', 'menuId', function() {
+    const menuId = get(this, 'menuId');
+    return get(this, `sideMenu.menus.${menuId}`);
+  }),
+  progress: oneWay('menu.progress'),
 
   style: computed('progress', function() {
     const progress = get(this, 'progress');
@@ -28,10 +32,10 @@ export default Component.extend({
   }),
 
   click() {
-    get(this, 'sideMenu').close();
+    get(this, 'sideMenu').close(get(this, 'menuId'));
   },
 
   touchEnd() {
-    get(this, 'sideMenu').close();
+    get(this, 'sideMenu').close(get(this, 'menuId'));
   }
 });

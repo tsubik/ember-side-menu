@@ -1,7 +1,7 @@
 import { assert } from '@ember/debug';
 import { deprecate } from '@ember/application/deprecations';
-import { equal } from '@ember/object/computed';
-import { set, get } from '@ember/object';
+import { equal, oneWay } from '@ember/object/computed';
+import { set, get, computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
 import Service from '@ember/service';
 
@@ -13,6 +13,18 @@ const menuIdDeprecation = {
 };
 
 export default Service.extend({
+  progress: oneWay('firstMenu.progress'),
+  isSlightlyOpen: oneWay('firstMenu.isSlightlyOpen'),
+  isOpen: equal('progress', 100),
+  isClosed: equal('progress', 0),
+
+  firstMenu: computed('menus', function() {
+    const menus = get(this, 'menus');
+    const firstMenu = menus[this._getFirstMenuId()];
+
+    return firstMenu;
+  }),
+
   init() {
     this._super(...arguments);
     set(this, 'menus', {});
@@ -22,6 +34,7 @@ export default Service.extend({
     assert(`${TAG} - create function - id must be defined`, isPresent(menuId));
     const menus = get(this, 'menus');
     const newMenu = {
+      id: menuId,
       progress: 0,
       isOpen: equal('progress', 100),
       isClosed: equal('progress', 0),
@@ -29,6 +42,7 @@ export default Service.extend({
     };
 
     menus[menuId] = newMenu;
+    set(this, 'menus', Object.assign({}, menus));
 
     return newMenu;
   },
@@ -38,6 +52,7 @@ export default Service.extend({
     const menus = get(this, 'menus');
 
     delete menus[menuId];
+    set(this, 'menus', Object.assign({}, menus));
   },
 
   close(id) {
