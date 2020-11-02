@@ -58,8 +58,9 @@ module('Integration | Component | side menu', function(hooks) {
   test('should not have box-shadow style none if progress > 0', async function(assert) {
     assert.expect(1);
 
-    this.set('sideMenu.progress', 50);
     await render(hbs`{{side-menu}}`);
+
+    this.set('sideMenu.progress', 50);
 
     assert.ok(
       find('.side-menu')

@@ -10,11 +10,10 @@ export default Component.extend({
   attributeBindings: ['style'],
   classNames: ['content-backdrop'],
 
+  menuId: 'default',
+
   menu: computed('sideMenu.menus', 'menuId', function() {
     const menuId = get(this, 'menuId');
-
-    if (!menuId) return get(this, `sideMenu.firstMenu`);
-
     return get(this, `sideMenu.menus.${menuId}`);
   }),
   progress: oneWay('menu.progress'),

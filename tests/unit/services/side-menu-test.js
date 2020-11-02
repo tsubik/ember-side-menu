@@ -4,8 +4,13 @@ import { setupTest } from 'ember-qunit';
 module('Unit | Service | side menu', function(hooks) {
   setupTest(hooks);
 
+  hooks.beforeEach(function() {
+    this.sideMenu = this.owner.lookup('service:side-menu');
+    this.sideMenu.create();
+  });
+
   test('it exists', function(assert) {
-    const service = this.owner.lookup('service:side-menu');
+    const service = this.get('sideMenu');
 
     assert.ok(service);
   });
@@ -13,7 +18,7 @@ module('Unit | Service | side menu', function(hooks) {
   test('close should close menu', function(assert) {
     assert.expect(2);
 
-    const service = this.owner.lookup('service:side-menu');
+    const service = this.get('sideMenu');
     service.set('progress', 100);
 
     assert.ok(service.get('isOpen'));
@@ -26,7 +31,7 @@ module('Unit | Service | side menu', function(hooks) {
   test('open should open menu', function(assert) {
     assert.expect(2);
 
-    const service = this.owner.lookup('service:side-menu');
+    const service = this.get('sideMenu');
 
     assert.ok(service.get('isClosed'));
 
@@ -38,7 +43,7 @@ module('Unit | Service | side menu', function(hooks) {
   test('toggle should toggle menu', function(assert) {
     assert.expect(3);
 
-    const service = this.owner.lookup('service:side-menu');
+    const service = this.get('sideMenu');
 
     assert.ok(service.get('isClosed'));
 

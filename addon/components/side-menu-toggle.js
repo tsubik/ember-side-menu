@@ -9,6 +9,7 @@ export default Component.extend({
   classNames: ['side-menu-toggle'],
 
   side: 'left',
+  menuId: 'default',
 
   click() {
     get(this, 'sideMenu').toggle(get(this, 'menuId'));

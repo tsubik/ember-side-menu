@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { alias } from '@ember/object/computed';
+import { alias, oneWay } from '@ember/object/computed';
 import { htmlSafe } from '@ember/string';
 import { set, get, computed } from '@ember/object';
 import { inject as service } from '@ember/service';
@@ -11,10 +11,13 @@ const styleProps = ['shadowStyle', 'positionStyle', 'transitionStyle', 'transfor
 export default Component.extend({
   sideMenu: service(),
 
-  menu: null,
+  menu: computed('id', 'sideMenu.menus', function() {
+    const menuId = get(this, 'id');
+    return get(this, `sideMenu.menus.${menuId}`);
+  }),
   progress: alias('menu.progress'),
-  isOpen: alias('menu.isOpen'),
-  isClosed: alias('menu.isClosed'),
+  isOpen: oneWay('menu.isOpen'),
+  isClosed: oneWay('menu.isClosed'),
   isSlightlyOpen: alias('menu.isSlightlyOpen'),
   isTouching: false,
   disableMenu: false,
@@ -23,6 +26,7 @@ export default Component.extend({
   classNames: ['side-menu'],
   classNameBindings: ['isInProgress:disable-scroll'],
 
+  id: 'default',
   side: 'left',
   width: '70%',
   rootNodeSelector: 'body',
@@ -102,8 +106,7 @@ export default Component.extend({
 
   _initMenu() {
     const sideMenu = get(this, 'sideMenu');
-    const menu = sideMenu.create(get(this, 'id'));
-    set(this, 'menu', menu);
+    sideMenu.create(get(this, 'id'));
   },
 
   _destroyMenu() {

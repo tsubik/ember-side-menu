@@ -1,100 +1,63 @@
-import { assert } from '@ember/debug';
-import { deprecate } from '@ember/application/deprecations';
-import { equal, oneWay } from '@ember/object/computed';
-import { set, get, computed } from '@ember/object';
-import { isPresent } from '@ember/utils';
+import { equal, oneWay, alias } from '@ember/object/computed';
+import EmberObject, { set, get } from '@ember/object';
 import Service from '@ember/service';
 
-const TAG = 'ember-side-menu/services/side-menu';
-const menuIdDeprecation = {
-  id: `${TAG}.menuId`,
-  until: '1.0.0',
-  url: ''
-};
-
-export default Service.extend({
-  progress: oneWay('firstMenu.progress'),
-  isSlightlyOpen: oneWay('firstMenu.isSlightlyOpen'),
+const MenuObject = EmberObject.extend({
+  id: undefined,
+  progress: 0,
   isOpen: equal('progress', 100),
   isClosed: equal('progress', 0),
+  isSlightlyOpen: false
+});
 
-  firstMenu: computed('menus', function() {
-    const menus = get(this, 'menus');
-    const firstMenu = menus[this._getFirstMenuId()];
+export default Service.extend({
+  // backwards compability with having default menu without using menu ids
+  progress: alias('defaultMenu.progress'),
+  isSlightlyOpen: oneWay('defaultMenu.isSlightlyOpen'),
+  isOpen: oneWay('defaultMenu.isOpen'),
+  isClosed: oneWay('defaultMenu.isClosed'),
 
-    return firstMenu;
-  }),
+  defaultMenu: oneWay('menus.default'),
 
   init() {
     this._super(...arguments);
-    set(this, 'menus', {});
+    set(this, 'menus', { default: MenuObject.create({ id: 'default' }) });
   },
 
-  create(menuId) {
-    assert(`${TAG} - create function - id must be defined`, isPresent(menuId));
+  create(menuId = 'default') {
     const menus = get(this, 'menus');
-    const newMenu = {
-      id: menuId,
-      progress: 0,
-      isOpen: equal('progress', 100),
-      isClosed: equal('progress', 0),
-      isSlightlyOpen: false
-    };
-
+    const newMenu = MenuObject.create({ id: menuId });
     menus[menuId] = newMenu;
     set(this, 'menus', Object.assign({}, menus));
 
     return newMenu;
   },
 
-  destroy(menuId) {
-    assert(`${TAG} - destroy function - id must be defined`, isPresent(menuId));
+  destroy(id = 'default') {
     const menus = get(this, 'menus');
 
-    delete menus[menuId];
+    delete menus[id];
     set(this, 'menus', Object.assign({}, menus));
   },
 
-  close(id) {
-    deprecate(
-      `${TAG} - using close method without menuId argument is deprecated, please provide menu id`,
-      isPresent(id),
-      menuIdDeprecation
-    );
-    const menuId = id || this._getFirstMenuId();
-    const menu = get(this, 'menus')[menuId];
+  close(id = 'default') {
+    const menu = get(this, 'menus')[id];
     set(menu, 'progress', 0);
     set(menu, 'isSlightlyOpen', false);
   },
 
-  open(id) {
-    deprecate(
-      `${TAG} - using open method without menuId argument is deprecated, please provide menu id`,
-      isPresent(id),
-      menuIdDeprecation
-    );
-    const menuId = id || this._getFirstMenuId();
-    const menu = get(this, 'menus')[menuId];
+  open(id = 'default') {
+    const menu = get(this, 'menus')[id];
     set(menu, 'progress', 100);
     set(menu, 'isSlightlyOpen', false);
   },
 
-  toggle(id) {
-    deprecate(
-      `${TAG} - using toggle method without menuId argument is deprecated, please provide menu id`,
-      isPresent(id),
-      menuIdDeprecation
-    );
-    const menuId = id || this._getFirstMenuId();
-    const menu = get(this, 'menus')[menuId];
+  toggle(id = 'default') {
+    const menu = get(this, 'menus')[id];
     if (get(menu, 'isOpen')) {
-      this.close(menuId);
+      this.close(id);
     } else {
-      this.open(menuId);
+      this.open(id);
     }
-  },
-
-  _getFirstMenuId() {
-    return Object.keys(get(this, 'menus'))[0];
   }
 });
