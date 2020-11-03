@@ -61,7 +61,7 @@
     "husky": "^0.14.3",
     "lint-staged": "^7.1.2",
     "loader.js": "^4.2.3",
-    "node-sass": "*",
+    "node-sass": "4.x",
     "prettier": "^1.12.1"
   },
   "keywords": [
