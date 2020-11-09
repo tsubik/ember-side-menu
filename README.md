@@ -14,7 +14,7 @@ Check out the live demo [here][live-demo]
 
 ## Ember Compability
 
-This addon is compatible with and tested against Ember 1.13 and higher.
+This addon is compatible with and tested against Ember 2.x and higher.
 
 ## Installation
 
@@ -74,6 +74,7 @@ document for example in `application.hbs` file.
 
 #### Parameters
 
+* id - (string), menu Id, use when using multiple menus, default: "default"
 * side - (string), which side of screen your menu takes. Possible values: ["left", "right"], default: "left"
 * width - (string), target width of open menu. CSS width - example values: ["40px", "40%", ...], default: null (default width set in
 CSS stylesheet to 70%)
@@ -97,6 +98,10 @@ component after `{{#side-menu}}` component.
 {{content-backdrop}}
 
 ```
+
+#### Parameters
+
+* menuId - (string), id of controlled menu, default: "default"
 
 ### Side Menu Toggle
 
@@ -130,6 +135,7 @@ export default SideMenuToggle.extend({
 #### Parameters
 
 * side - (string), which side of screen your menu toggle takes. Possible values: ["left", "right"], default: "left"
+* menuId - (string), id of controlled menu, default: "default"
 
 ### Side Menu Link To
 
@@ -139,6 +145,34 @@ Works like a standard `{{link-to}}` helper, but also closes the menu.
 {{#side-menu-link-to "new"}}
   New Event
 {{/side-menu-link-to}
+
+```
+
+#### Parameters
+
+* menuId - (string), id of menu which should be closed when clicking, default: "default"
+
+### Using multiple side menus
+
+There is a possiblity to declare more instances of side menu components, and control them separately.
+Default menu id is `default` and it could be omitted, if you want to use more than one instance of side-menu
+you should not forget about setting relevant `menuId` for connected menu components.
+
+``` handlebars
+
+{{#side-menu side="left" id="leftMenu"}}
+  Left Menu
+{{/side-menu}}
+{{#side-menu side="right" id="rightMenu"}}
+  Right Menu
+{{/side-menu}}
+
+{{side-menu-toggle menuId="leftMenu"}}
+{{side-menu-toggle menuId="rightMenu"}}
+
+{{content-backdrop menuId="leftMenu"}}
+{{content-backdrop menuId="rightMenu"}}
+
 ```
 
 ### Side Menu Service
@@ -159,16 +193,22 @@ export default Ember.Route.extend({
 
 #### Methods
 
-* open
-* close
-* toggle
+* open(menuId='default')
+* close(menuId='default')
+* toggle(menuId='default')
 
 #### Properties
+
+For backward compability there is a possiblity to control or check `default` menu properties directly on service object.
 
 * isOpen (boolean)
 * isClosed (boolean)
 * isSlightlyOpen (boolean)
 * progress (number) 0-100
+
+When using mutliple menus or changing default `menuId` then menu's state is held in `menus` object.
+
+For example to get `isOpen` property for menu with id `sampleMenu` we can use `this.get("sideMenu.menus.sampleMenu.isOpen"`.
 
 ## License
 
