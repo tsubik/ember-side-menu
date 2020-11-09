@@ -11,11 +11,7 @@ module('Integration | Component | side menu', function(hooks) {
   });
 
   test('it renders', async function(assert) {
-    assert.expect(2);
-
-    await render(hbs`{{side-menu}}`);
-
-    assert.equal(find('*').textContent.trim(), '');
+    assert.expect(1);
 
     await render(hbs`
       {{#side-menu}}
