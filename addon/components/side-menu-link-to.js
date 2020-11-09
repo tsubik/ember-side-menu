@@ -5,7 +5,9 @@ import LinkComponent from '@ember/routing/link-component';
 export default LinkComponent.extend({
   sideMenu: service(),
 
+  menuId: 'default',
+
   click() {
-    get(this, 'sideMenu').close();
+    get(this, 'sideMenu').close(get(this, 'menuId'));
   }
 });

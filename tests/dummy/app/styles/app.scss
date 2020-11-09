@@ -76,7 +76,7 @@ h1 {
   }
 }
 
-.side-button {
+.tab-button {
   display: inline-block;
   width: 5em;
   height: 2.5em;
@@ -172,5 +172,19 @@ h1 {
   .bm-menu {
     padding: 2.5em 1.5em 0;
     font-size: 1.15em;
+  }
+}
+
+.close-button {
+  &:before {
+    display: inline-block;
+    content: "\00d7"; /* This will render the 'X' */
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    font-size: 40px;
+    height: 40px;
+    width:20px;
   }
 }
