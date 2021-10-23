@@ -27,7 +27,7 @@ export default Service.extend({
   create(menuId = 'default') {
     const menus = get(this, 'menus');
     const newMenu = MenuObject.create({ id: menuId });
-    menus[menuId] = newMenu;
+    set(menus, menuId, newMenu);
     set(this, 'menus', Object.assign({}, menus));
 
     return newMenu;
