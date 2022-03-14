@@ -89,5 +89,9 @@
       "prettier --config package.json --write",
       "git add"
     ]
+  },
+  "volta": {
+    "node": "12.22.7",
+    "yarn": "1.22.17"
   }
 }
