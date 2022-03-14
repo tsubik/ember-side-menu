@@ -10,11 +10,14 @@ Mobile friendly Ember menu component using CSS transitions. More effects and SVG
 
 ## Demo
 
-Check out the live demo [here][live-demo]
+Check out the live demo [here](https://tsubik.com/ember-side-menu)
 
-## Ember Compability
+## Compatibility
 
-This addon is compatible with and tested against Ember 2.x and higher.
+* Ember.js v3.24 or above
+* Ember CLI v3.24 or above
+* Node.js v12 or above
+
 
 ## Installation
 
@@ -210,8 +213,11 @@ When using mutliple menus or changing default `menuId` then menu's state is held
 
 For example to get `isOpen` property for menu with id `sampleMenu` we can use `this.get("sideMenu.menus.sampleMenu.isOpen"`.
 
+## Contributing
+
+See the [Contributing](CONTRIBUTING.md) guide for details.
+
+
 ## License
 
-MIT
-
-[live-demo]: https://tsubik.com/ember-side-menu
+This project is licensed under the [MIT License](LICENSE.md).
