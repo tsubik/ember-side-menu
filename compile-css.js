@@ -1,7 +1,7 @@
 'use strict';
 
 // eslint-disable-next-line node/no-unpublished-require
-const sass = require('node-sass');
+const sass = require('sass');
 const fs = require('fs');
 const path = require('path');
 
