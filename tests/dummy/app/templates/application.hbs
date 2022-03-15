@@ -1,8 +1,9 @@
+{{! template-lint-disable no-duplicate-landmark-elements }}
 {{page-title "ember-side-menu"}}
 
-{{#if isSingle}}
-  {{#side-menu id="singleMenu" width="300px" side=side}}
-    <span class="close-button" {{action "close" "singleMenu" on="click"}}></span>
+{{#if this.isSingle}}
+  <SideMenu @id="singleMenu" @width="300px" @side={{this.side}}>
+    <span class="close-button" role="button" {{on "click" (fn this.close "singleMenu")}}></span>
 
     <nav class="sm-item-list">
       <a href="">
@@ -22,12 +23,12 @@
         <span>Comments</span>
       </a>
     </nav>
-  {{/side-menu}}
+  </SideMenu>
 
-  {{content-backdrop menuId="singleMenu"}}
+  <ContentBackdrop @menuId="singleMenu" />
 {{else}}
-  {{#side-menu id="menuLeft" width="300px" side="left"}}
-    <span class="close-button" {{action "close" "menuLeft" on="click"}}></span>
+  <SideMenu @id="menuLeft" @width="300px" @side="left">
+    <span class="close-button" role="button" {{on "click" (fn this.close "menuLeft")}}></span>
 
     <nav class="sm-item-list">
       <a href="">
@@ -47,10 +48,10 @@
         <span>Comments</span>
       </a>
     </nav>
-  {{/side-menu}}
+  </SideMenu>
 
-  {{#side-menu id="menuRight" width="300px" side="right"}}
-    <span class="close-button" {{action "close" "menuRight" on="click"}}></span>
+  <SideMenu @id="menuRight" @width="300px" @side="right">
+    <span class="close-button" role="button" {{on "click" (fn "close" "menuRight")}}></span>
 
     <nav class="sm-item-list">
       <a href="">
@@ -62,20 +63,20 @@
         <span>Reading List</span>
       </a>
     </nav>
-  {{/side-menu}}
+  </SideMenu>
 
-  {{content-backdrop menuId="menuLeft"}}
-  {{content-backdrop menuId="menuRight"}}
+  <ContentBackdrop @menuId="menuLeft" />
+  <ContentBackdrop @menuId="menuRight" />
 {{/if}}
 
 
 
 <div id="outer-container">
-  {{#if isSingle}}
-    {{side-menu-toggle side=side menuId="singleMenu"}}
+  {{#if this.isSingle}}
+    <SideMenuToggle @side={{this.side}} @menuId="singleMenu" />
   {{else}}
-    {{side-menu-toggle side="left" menuId="menuLeft"}}
-    {{side-menu-toggle side="right" menuId="menuRight"}}
+    <SideMenuToggle @side="left" @menuId="menuLeft" />
+    <SideMenuToggle @side="right" @menuId="menuRight" />
   {{/if}}
 
   <main id="page-wrap">
@@ -85,18 +86,18 @@
       Show single or multiple menu example?
     </p>
 
-    {{#tab-button side="left" active=isSingle click=(action "changeMode" "single")}}Single{{/tab-button}}
-    {{#tab-button side="right" active=isMulti click=(action "changeMode" "multi")}}Multi{{/tab-button}}
+    <TabButton @side="left" @active={{this.isSingle}} {{on "click" (fn this.changeMode "single")}}>Single</TabButton>
+    <TabButton @side="right" @active={{this.isMulti}} {{on "click" (fn this.changeMode "multi")}}>Multi</TabButton>
 
     <br/>
 
-    {{#if isSingle}}
+    {{#if this.isSingle}}
       <p>
         Choose single menu side.
       </p>
 
-      {{#tab-button side="left" active=isLeft click=(action "changeSide" "left")}}Left{{/tab-button}}
-      {{#tab-button side="right" active=isRight click=(action "changeSide" "right")}}Right{{/tab-button}}
+      <TabButton @side="left" @active={{this.isLeft}} {{on "click" (fn this.changeSide "left")}}>Left</TabButton>
+      <TabButton @side="right" @active={{this.isRight}} {{on "click" (fn this.changeSide "right")}}>Right</TabButton>
     {{/if}}
 
     <h2 class="description">

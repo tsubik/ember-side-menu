@@ -31,12 +31,12 @@ Import ember-side-menu styles in your application's `app.scss` file.
 
 ### Side Menu
 
-`{{#side-menu}}` component is a main container of your menu. Place it on some top level of your DOM
+`<SideMenu>` component is a main container of your menu. Place it on some top level of your DOM
 document for example in `application.hbs` file.
 
 ``` handlebars
 
-{{#side-menu}}
+<SideMenu>
   <header class="navbar navbar-default">
     <div class="navbar-header">
     ...
@@ -45,10 +45,10 @@ document for example in `application.hbs` file.
   <ul class="nav">
     <li class="header">Events</li>
     <li>
-      {{#side-menu-link-to "new"}}
+      <SideMenuLinkTo @route="new">
         {{inline-svg "plus" class="icon"}}
         New Event
-      {{/side-menu-link-to}}
+      </SideMenuLinkTo>
     </li>
     <li class="divider"></li>
     ...
@@ -59,8 +59,8 @@ document for example in `application.hbs` file.
       </a>
     </li>
   </ul>
-{{/side-menu}}
-{{content-backdrop}}
+</SideMenu>
+<ContentBackdrop />
 <div class="page-content">
   {{partial "shared/navbar"}}
 
@@ -90,15 +90,15 @@ default: 300
 
 ### Content Backdrop
 
-If you want to add backdrop to the rest of the layout while menu opening, then just place `{{content-backdrop}}`
-component after `{{#side-menu}}` component.
+If you want to add backdrop to the rest of the layout while menu opening, then just place `<ContentBackdrop />`
+component after `<SideMenu>` component.
 
 ``` handlebars
 
-{{#side-menu}}
+<SideMenu>
 ...
-{{/side-menu}}
-{{content-backdrop}}
+</SideMenu>
+</ContentBackdrop />
 
 ```
 
@@ -113,15 +113,15 @@ Like a button component to toggle menu.
 You can use default toggle button consist with some toggle bars
 
 ``` handlebars
-{{side-menu-toggle}}
+<SideMenuToggle />
 ```
 
 You can use your own design block.
 
 ``` handlebars
-{{#side-menu-toggle}}
+<SideMenuToggle>
   <span class="glyphicon glyphicon-menu-hamburger"></span>
-{{/side-menu-toggle}}
+</SideMenuToggle>
 ```
 
 You can create a custom one by extending the main component.
@@ -129,10 +129,11 @@ You can create a custom one by extending the main component.
 ``` javascript
 import SideMenuToggle from "ember-side-menu/components/side-menu-toggle";
 
-export default SideMenuToggle.extend({
-    tagName: "button",
-    classNames: ["navbar-btn", "btn", "btn-link", "pull-left"],
-});
+export default class MyComponent extends SideMenuToggle {
+    get class() {
+        return "navbar-btn btn btn-link pull-left";
+    }
+}
 ```
 
 #### Parameters
@@ -142,12 +143,12 @@ export default SideMenuToggle.extend({
 
 ### Side Menu Link To
 
-Works like a standard `{{link-to}}` helper, but also closes the menu.
+Works like a standard `<LinkTo>` component, but also closes the menu.
 
 ``` handlebars
-{{#side-menu-link-to "new"}}
+<SideMenuLinkTo @route="new">
   New Event
-{{/side-menu-link-to}
+</SideMenuLinkTo>
 
 ```
 
@@ -163,18 +164,18 @@ you should not forget about setting relevant `menuId` for connected menu compone
 
 ``` handlebars
 
-{{#side-menu side="left" id="leftMenu"}}
+<SideMenu @side="left" @id="leftMenu">
   Left Menu
-{{/side-menu}}
-{{#side-menu side="right" id="rightMenu"}}
+</SideMenu>
+<SideMenu @side="right" @id="rightMenu">
   Right Menu
-{{/side-menu}}
+</SideMenu>
 
-{{side-menu-toggle menuId="leftMenu"}}
-{{side-menu-toggle menuId="rightMenu"}}
+<SideMenuToggle @menuId="leftMenu" />
+<SideMenuToggle @menuId="rightMenu" />
 
-{{content-backdrop menuId="leftMenu"}}
-{{content-backdrop menuId="rightMenu"}}
+<ContentBackdrop @menuId="leftMenu" />
+<ContentBackdrop @menuId="rightMenu" />
 
 ```
 
@@ -183,15 +184,14 @@ you should not forget about setting relevant `menuId` for connected menu compone
 There is an available `sideMenu` service to control the menu.
 
 ``` javascript
-export default Ember.Route.extend({
-  sideMenu: Ember.inject.service(),
+export default class MyRoute extends Route {
+  @service sideMenu;
 
-  actions: {
-    openSideMenu() {
-      this.get("sideMenu").open();
-    },
-  },
-});
+  @action
+  openSideMenu() {
+    this.sideMenu.open();
+  }
+}
 ```
 
 #### Methods
@@ -211,7 +211,7 @@ For backward compability there is a possiblity to control or check `default` men
 
 When using mutliple menus or changing default `menuId` then menu's state is held in `menus` object.
 
-For example to get `isOpen` property for menu with id `sampleMenu` we can use `this.get("sideMenu.menus.sampleMenu.isOpen"`.
+For example to get `isOpen` property for menu with id `sampleMenu` we can use `this.sideMenu.menus.sampleMenu.isOpen`.
 
 ## Contributing
 

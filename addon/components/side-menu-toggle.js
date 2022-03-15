@@ -1,17 +1,19 @@
-import Component from '@ember/component';
-import { get } from '@ember/object';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  sideMenu: service(),
+export default class SideMenuComponent extends Component {
+  @service sideMenu;
 
-  classNameBindings: ['side'],
-  classNames: ['side-menu-toggle'],
-
-  side: 'left',
-  menuId: 'default',
-
-  click() {
-    get(this, 'sideMenu').toggle(get(this, 'menuId'));
+  get side() {
+    return this.args.side ?? 'left';
   }
-});
+  get menuId() {
+    return this.args.menuId ?? 'default';
+  }
+
+  @action
+  toggle() {
+    this.sideMenu.toggle(this.menuId);
+  }
+}

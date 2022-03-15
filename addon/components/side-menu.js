@@ -1,85 +1,105 @@
-import Component from '@ember/component';
-import { alias, oneWay } from '@ember/object/computed';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 import { htmlSafe } from '@ember/string';
-import { set, get, computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { later, bind, cancel, schedule } from '@ember/runloop';
 import { createGesture } from 'ember-side-menu/utils/gestures';
+import { addObserver, removeObserver } from '@ember/object/observers';
+import { dependentKeyCompat } from '@ember/object/compat';
 
 const styleProps = ['shadowStyle', 'positionStyle', 'transitionStyle', 'transformStyle'];
 
-export default Component.extend({
-  sideMenu: service(),
+export default class SideMenuComponent extends Component {
+  @service sideMenu;
 
-  menu: computed('id', 'sideMenu.menus', function() {
-    const menuId = get(this, 'id');
-    return get(this, `sideMenu.menus.${menuId}`);
-  }),
-  progress: alias('menu.progress'),
-  isOpen: oneWay('menu.isOpen'),
-  isClosed: oneWay('menu.isClosed'),
-  isSlightlyOpen: alias('menu.isSlightlyOpen'),
-  isTouching: false,
-  disableMenu: false,
+  get menu() {
+    return this.sideMenu.menus[this.id];
+  }
+  get progress() {
+    return this.menu.progress;
+  }
+  get isOpen() {
+    return this.menu.isOpen;
+  }
+  @dependentKeyCompat
+  get isClosed() {
+    return this.menu.isClosed;
+  }
+  get isSlightlyOpen() {
+    return this.menu.isSlightlyOpen;
+  }
+  isTouching = false;
+  disableMenu = false;
 
-  attributeBindings: ['style'],
-  classNames: ['side-menu'],
-  classNameBindings: ['isInProgress:disable-scroll'],
+  get id() {
+    return this.args.id ?? 'default';
+  }
 
-  id: 'default',
-  side: 'left',
-  width: '70%',
-  rootNodeSelector: 'body',
+  get side() {
+    return this.args.side ?? 'left';
+  }
+  get width() {
+    return this.args.width ?? '70%';
+  }
+  get rootNodeSelector() {
+    return this.args.rootNodeSelector ?? 'body';
+  }
 
-  initialTapAreaWidth: 30,
-  slightlyOpenWidth: 20,
-  slightlyOpenAfter: 300,
+  get initialTapAreaWidth() {
+    return this.args.initialTapAreaWidth ?? 30;
+  }
+  get slightlyOpenWidth() {
+    return this.args.slightlyOpenWidth ?? 20;
+  }
+  get slightlyOpenAfter() {
+    return this.args.slightlyOpenAfter ?? 300;
+  }
 
-  shadowStyle: computed('progress', function() {
-    const progress = get(this, 'progress');
+  get shadowStyle() {
+    const progress = this.progress;
     return progress === 0 ? 'box-shadow: none;' : '';
-  }),
+  }
 
-  positionStyle: computed('width', 'side', function() {
-    const width = get(this, 'width');
-    const side = get(this, 'side');
+  get positionStyle() {
+    const width = this.width;
+    const side = this.side;
 
     if (side === 'left') {
       return `width: ${width}; right: initial; left: -${width};`;
     }
 
     return `width: ${width}; left: initial; right: -${width};`;
-  }),
+  }
 
-  transitionStyle: computed('progress', function() {
-    const progress = get(this, 'progress');
+  get transitionStyle() {
+    const progress = this.progress;
     return progress === 0 || progress === 100 ? 'transition: transform 0.2s ease-out;' : 'transition: none;';
-  }),
+  }
 
-  transformStyle: computed('progress', 'side', 'isSlightlyOpen', function() {
-    const side = get(this, 'side');
-    const isSlightlyOpen = get(this, 'isSlightlyOpen');
-    const slightlyOpenWidth = get(this, 'slightlyOpenWidth');
+  get transformStyle() {
+    const side = this.side;
+    const isSlightlyOpen = this.isSlightlyOpen;
+    const slightlyOpenWidth = this.slightlyOpenWidth;
     const direction = side === 'right' ? '-' : '';
     const unit = isSlightlyOpen ? 'px' : '%';
-    const progress = isSlightlyOpen ? slightlyOpenWidth : get(this, 'progress');
+    const progress = isSlightlyOpen ? slightlyOpenWidth : this.progress;
 
     return `transform: translateX(${direction}${progress}${unit});`;
-  }),
+  }
 
-  style: computed(...styleProps, function() {
-    const combinedStyle = styleProps.reduce((acc, style) => acc + get(this, style), '');
+  get style() {
+    const combinedStyle = styleProps.reduce((acc, style) => acc + this[style], '');
 
     return htmlSafe(combinedStyle);
-  }),
+  }
 
   _setScrollDisable() {
-    const isClosed = get(this, 'isClosed');
-    const wasClosed = get(this, 'wasClosed');
+    const isClosed = this.isClosed;
+    const wasClosed = this.wasClosed;
 
     if (isClosed === wasClosed) return;
 
-    const rootNode = document.querySelector(get(this, 'rootNodeSelector'));
+    const rootNode = document.querySelector(this.rootNodeSelector);
 
     if (isClosed) {
       rootNode.classList.remove('disable-scroll');
@@ -87,100 +107,105 @@ export default Component.extend({
       rootNode.classList.add('disable-scroll');
     }
 
-    set(this, 'wasClosed', isClosed);
-  },
+    this.wasClosed = isClosed;
+  }
 
-  didInsertElement() {
-    this._super(...arguments);
+  constructor() {
+    super(...arguments);
     this._initMenu();
-    this._setupEventListeners();
-    this._setupObservers();
-  },
+  }
 
-  willDestroyElement() {
-    this._super(...arguments);
+  @action
+  didInsert(element) {
+    this._setupEventListeners(element);
+    this._setupObservers();
+  }
+
+  willDestroy() {
     this._destroyMenu();
     this._removeEventListeners();
     this._removeObservers();
-  },
+    super.willDestroy(...arguments);
+  }
 
   _initMenu() {
-    const sideMenu = get(this, 'sideMenu');
-    sideMenu.create(get(this, 'id'));
-  },
+    const sideMenu = this.sideMenu;
+    sideMenu.create(this.id);
+  }
 
   _destroyMenu() {
-    const sideMenu = get(this, 'sideMenu');
-    sideMenu.destroy(get(this, 'id'));
-  },
+    const sideMenu = this.sideMenu;
+    sideMenu.destroy(this.id);
+  }
 
-  _setupEventListeners() {
-    const rootNode = document.querySelector(get(this, 'rootNodeSelector'));
+  _setupEventListeners(element) {
+    const rootNode = document.querySelector(this.rootNodeSelector);
     const onRootNodeTouch = bind(this, this._onRootNodeTouch);
 
     rootNode.addEventListener('touchstart', onRootNodeTouch);
 
     schedule('afterRender', () => {
-      set(this, 'onTouchStart', onRootNodeTouch);
+      this.onTouchStart = onRootNodeTouch;
     });
     const onMenuScroll = () => {
-      if (!get(this, 'disableMenu') && !get(this, 'isInProgress')) {
-        const enableMenuOnce = e => {
-          set(this, 'disableMenu', false);
+      if (!this.disableMenu && !this.isInProgress) {
+        const enableMenuOnce = (e) => {
+          this.disableMenu = false;
           e.target.removeEventListener(e.type, enableMenuOnce);
         };
-        set(this, 'disableMenu', true);
-        get(this, 'element').addEventListener('touchend', enableMenuOnce);
+        this.disableMenu = true;
+        element.addEventListener('touchend', enableMenuOnce);
       }
     };
-    get(this, 'element').addEventListener('scroll', onMenuScroll);
-  },
+    element.addEventListener('scroll', onMenuScroll);
+  }
 
   _setupObservers() {
     this._setScrollDisable();
-    this.addObserver('isClosed', this, '_setScrollDisable');
-  },
+    // eslint-disable-next-line ember/no-observers
+    addObserver(this, 'isClosed', this, '_setScrollDisable');
+  }
 
   _removeObservers() {
-    this.removeObserver('isClosed', this, '_setScrollDisable');
-  },
+    removeObserver(this, 'isClosed', this, '_setScrollDisable');
+  }
 
   _removeEventListeners() {
-    const onTouchStart = get(this, 'onTouchStart');
-    const rootNode = document.querySelector(get(this, 'rootNodeSelector'));
+    const onTouchStart = this.onTouchStart;
+    const rootNode = document.querySelector(this.rootNodeSelector);
 
     rootNode.removeEventListener('touchstart', onTouchStart);
-  },
+  }
 
   _onRootNodeTouch(evt) {
     let runOpenMenuSlightly;
-    const rootNode = document.querySelector(get(this, 'rootNodeSelector'));
-    const onTouchMove = event => {
+    const rootNode = document.querySelector(this.rootNodeSelector);
+    const onTouchMove = (event) => {
       if (runOpenMenuSlightly) {
         cancel(runOpenMenuSlightly);
       }
 
-      if (get(this, 'disableMenu')) return;
+      if (this.disableMenu) return;
 
-      if (!(this._isTouchWithin(event, get(this, 'slightlyOpenWidth')) && get(this, 'isClosed'))) {
-        if (get(this, 'isSlightlyOpen')) {
-          set(this, 'isSlightlyOpen', false);
+      if (!(this._isTouchWithin(event, this.slightlyOpenWidth) && this.isClosed)) {
+        if (this.isSlightlyOpen) {
+          this.isSlightlyOpen = false;
         }
 
-        if (!get(this, 'isInProgress') && this._isInitialGesture(event)) {
-          set(this, 'isInProgress', true);
+        if (!this.isInProgress && this._isInitialGesture(event)) {
+          this.isInProgress = true;
         }
 
-        if (get(this, 'isInProgress')) {
+        if (this.isInProgress) {
           this._updateProgress(event.touches[0].pageX);
         }
       }
     };
-    const onTouchEnd = event => {
+    const onTouchEnd = (event) => {
       rootNode.removeEventListener('touchmove', onTouchMove);
       rootNode.removeEventListener('touchend', onTouchEnd);
-      set(this, 'isTouching', false);
-      set(this, 'isInProgress', false);
+      this.isTouching = false;
+      this.isInProgress = false;
 
       if (runOpenMenuSlightly) {
         cancel(runOpenMenuSlightly);
@@ -189,55 +214,55 @@ export default Component.extend({
       this._completeMenuTransition(event);
     };
 
-    set(this, 'isTouching', true);
+    this.isTouching = true;
 
     if (this._validToStartTracking(evt)) {
-      set(this, 'touchStartEvent', evt);
+      this.touchStartEvent = evt;
       this._setTouchOffset(evt);
 
-      if (this._isTouchWithin(evt, get(this, 'initialTapAreaWidth'))) {
+      if (this._isTouchWithin(evt, this.initialTapAreaWidth)) {
         runOpenMenuSlightly = later(() => {
-          if (get(this, 'isClosed') && get(this, 'isTouching')) {
-            set(this, 'isSlightlyOpen', true);
+          if (this.isClosed && this.isTouching) {
+            this.isSlightlyOpen = true;
           }
-        }, get(this, 'slightlyOpenAfter'));
+        }, this.slightlyOpenAfter);
       }
 
       rootNode.addEventListener('touchmove', onTouchMove);
       rootNode.addEventListener('touchend', onTouchEnd);
     }
-  },
+  }
 
   _setTouchOffset(event) {
-    const isOpen = get(this, 'isOpen');
+    const isOpen = this.isOpen;
     const pageX = event.touches[0].pageX;
-    const side = get(this, 'side');
+    const side = this.side;
 
     if (isOpen) {
       if (side === 'left') {
-        set(this, 'touchOffset', Math.max(0, this.element.offsetWidth - pageX));
+        this.touchOffset = Math.max(0, this.element.offsetWidth - pageX);
       } else {
-        set(this, 'touchOffset', Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX)));
+        this.touchOffset = Math.max(0, this.element.offsetWidth - (window.innerWidth - pageX));
       }
     } else {
-      set(this, 'touchOffset', 0);
+      this.touchOffset = 0;
     }
-  },
+  }
 
   _updateProgress(touchPageX) {
     const elementWidth = this.element.offsetWidth;
-    const touchOffset = get(this, 'touchOffset');
-    const side = get(this, 'side');
+    const touchOffset = this.touchOffset;
+    const side = this.side;
     const relativeX = side === 'left' ? touchPageX : window.innerWidth - touchPageX;
     const progress = Math.min(((relativeX + touchOffset) / elementWidth) * 100, 100);
 
-    set(this, 'progress', progress);
-  },
+    this.menu.progress = progress;
+  }
 
   _completeMenuTransition(event) {
-    const progress = get(this, 'progress');
-    const touchStartEvent = get(this, 'touchStartEvent');
-    const side = get(this, 'side');
+    const progress = this.progress;
+    const touchStartEvent = this.touchStartEvent;
+    const side = this.side;
     const gesture = createGesture(touchStartEvent, event);
     const minClosingVelocity = 0.3;
     const autoCompleteThreshold = 50;
@@ -248,28 +273,28 @@ export default Component.extend({
     const isOpeningMovement = (side === 'left' && isSwipingRight) || (side === 'right' && isSwipingLeft);
 
     if (isClosingMovement || progress < autoCompleteThreshold) {
-      get(this, 'sideMenu').close(get(this, 'id'));
+      this.sideMenu.close(this.id);
     } else if (isOpeningMovement || progress >= autoCompleteThreshold) {
-      get(this, 'sideMenu').open(get(this, 'id'));
+      this.sideMenu.open(this.id);
     }
-  },
+  }
 
   _validToStartTracking(event) {
-    return get(this, 'isOpen') || this._isTouchWithin(event, get(this, 'initialTapAreaWidth'));
-  },
+    return this.isOpen || this._isTouchWithin(event, this.initialTapAreaWidth);
+  }
 
   _isInitialGesture(event) {
-    const touchStartEvent = get(this, 'touchStartEvent');
+    const touchStartEvent = this.touchStartEvent;
     const gesture = createGesture(touchStartEvent, event);
     const minTime = 10; // 10 ms minimum time of gesture
     const isMoreSwiping = Math.abs(gesture.velocityX) > Math.abs(gesture.velocityY);
     return gesture.time > minTime && isMoreSwiping;
-  },
+  }
 
   _isTouchWithin(event, areaWidth) {
-    const side = get(this, 'side');
+    const side = this.side;
     const pageX = event.touches[0].pageX;
 
     return (side === 'left' && pageX < areaWidth) || (side === 'right' && pageX > window.innerWidth - areaWidth);
   }
-});
+}

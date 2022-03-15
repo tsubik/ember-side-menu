@@ -1,0 +1,9 @@
+{{! template-lint-disable no-invalid-interactive}}
+<div
+  class="content-backdrop"
+  style={{this.style}}
+  {{on "click" this.close}}
+  {{on "touchend" this.close}}
+  ...attributes>
+  {{yield}}
+</div>

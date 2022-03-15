@@ -20,6 +20,7 @@ module.exports = {
     // node files
     {
       files: [
+        './compile-css.js',
         './.eslintrc.js',
         './.prettierrc.js',
         './.template-lintrc.js',

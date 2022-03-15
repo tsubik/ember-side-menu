@@ -1,30 +1,40 @@
 import Controller from '@ember/controller';
-import { equal } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Controller.extend({
-  sideMenu: service(),
+export default class ApplicationController extends Controller {
+  @service sideMenu;
 
-  side: 'left',
-  mode: 'single',
+  @tracked side = 'left';
+  @tracked mode = 'single';
 
-  isLeft: equal('side', 'left'),
-  isRight: equal('side', 'right'),
-
-  isSingle: equal('mode', 'single'),
-  isMulti: equal('mode', 'multi'),
-
-  actions: {
-    changeSide(side) {
-      this.set('side', side);
-    },
-
-    changeMode(mode) {
-      this.set('mode', mode);
-    },
-
-    close(menuId) {
-      this.get('sideMenu').close(menuId);
-    }
+  get isLeft() {
+    return this.side === 'left';
   }
-});
+  get isRight() {
+    return this.side === 'right';
+  }
+
+  get isSingle() {
+    return this.mode === 'single';
+  }
+  get isMulti() {
+    return this.mode === 'multi';
+  }
+
+  @action
+  changeSide(side) {
+    this.side = side;
+  }
+
+  @action
+  changeMode(mode) {
+    this.mode = mode;
+  }
+
+  @action
+  close(menuId) {
+    this.sideMenu.close(menuId);
+  }
+}
