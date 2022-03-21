@@ -163,11 +163,11 @@ export default class SideMenuComponent extends Component {
   _setupObservers() {
     this._setScrollDisable();
     // eslint-disable-next-line ember/no-observers
-    addObserver(this, 'isClosed', this, '_setScrollDisable');
+    addObserver(this, 'isClosed', this, '_setScrollDisable', false);
   }
 
   _removeObservers() {
-    removeObserver(this, 'isClosed', this, '_setScrollDisable');
+    removeObserver(this, 'isClosed', this, '_setScrollDisable', false);
   }
 
   _removeEventListeners() {
