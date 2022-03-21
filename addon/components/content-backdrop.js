@@ -1,25 +1,25 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/string';
 import { inject as service } from '@ember/service';
-import { get, computed } from '@ember/object';
-import { oneWay } from '@ember/object/computed';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  sideMenu: service(),
+export default class ContentBackdropComponent extends Component {
+  @service sideMenu;
 
-  attributeBindings: ['style'],
-  classNames: ['content-backdrop'],
+  get menuId() {
+    return this.args.menuId ?? 'default';
+  }
 
-  menuId: 'default',
+  get menu() {
+    return this.sideMenu.menus[this.menuId];
+  }
 
-  menu: computed('sideMenu.menus', 'menuId', function() {
-    const menuId = get(this, 'menuId');
-    return get(this, `sideMenu.menus.${menuId}`);
-  }),
-  progress: oneWay('menu.progress'),
+  get progress() {
+    return this.menu.progress;
+  }
 
-  style: computed('progress', function() {
-    const progress = get(this, 'progress');
+  get style() {
+    const progress = this.progress;
     const opacity = progress / 100;
     const visibility = progress === 0 ? 'hidden' : 'visible';
     let transition = 'none';
@@ -31,13 +31,10 @@ export default Component.extend({
     }
 
     return htmlSafe(`opacity: ${opacity}; visibility: ${visibility}; transition: ${transition}`);
-  }),
-
-  click() {
-    get(this, 'sideMenu').close(get(this, 'menuId'));
-  },
-
-  touchEnd() {
-    get(this, 'sideMenu').close(get(this, 'menuId'));
   }
-});
+
+  @action
+  close() {
+    this.sideMenu.close(this.menuId);
+  }
+}

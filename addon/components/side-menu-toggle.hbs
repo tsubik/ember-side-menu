@@ -1,0 +1,12 @@
+{{! template-lint-disable no-invalid-interactive}}
+<div
+  class="side-menu-toggle {{this.side}}"
+  {{on "click" this.toggle}}
+  ...attributes>
+  {{#if (has-block)}}
+    {{yield}}
+  {{else}}
+    <span class="toggle-bars">
+    </span>
+  {{/if}}
+</div>

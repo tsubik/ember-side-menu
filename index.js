@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-side-menu',
+  name: require('./package').name,
 
-  included: function(app) {
+  included: function (app) {
     this._super.included.apply(this, arguments);
 
     const hasSass = !!app.registry.availablePlugins['ember-cli-sass'];
@@ -12,5 +12,5 @@ module.exports = {
     if (!hasSass && !hasLess) {
       app.import('vendor/ember-side-menu.css');
     }
-  }
+  },
 };

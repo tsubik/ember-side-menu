@@ -3,78 +3,60 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
-module('Integration | Component | content backdrop', function(hooks) {
+module('Integration | Component | content backdrop', function (hooks) {
   setupRenderingTest(hooks);
 
-  hooks.beforeEach(function() {
+  hooks.beforeEach(function () {
     this.sideMenu = this.owner.lookup('service:side-menu');
   });
 
-  test('it renders', async function(assert) {
-    await render(hbs`{{content-backdrop}}`);
+  test('it renders', async function (assert) {
+    await render(hbs`<ContentBackdrop />`);
 
     assert.equal(find('*').textContent.trim(), '');
   });
 
-  test('should not be visible if menu is closed', async function(assert) {
+  test('should not be visible if menu is closed', async function (assert) {
     assert.expect(1);
 
-    await render(hbs`{{content-backdrop}}`);
+    await render(hbs`<ContentBackdrop />`);
 
-    assert.ok(
-      find('.content-backdrop')
-        .getAttribute('style')
-        .indexOf('visibility: hidden') > -1
-    );
+    assert.ok(find('.content-backdrop').getAttribute('style').indexOf('visibility: hidden') > -1);
   });
 
-  test('should be visible if menu is open', async function(assert) {
+  test('should be visible if menu is open', async function (assert) {
     assert.expect(1);
 
-    this.set('sideMenu.progress', 100);
-    await render(hbs`{{content-backdrop}}`);
+    this.set('sideMenu.defaultMenu.progress', 100);
+    await render(hbs`<ContentBackdrop />`);
 
-    assert.ok(
-      find('.content-backdrop')
-        .getAttribute('style')
-        .indexOf('visibility: visible') > -1
-    );
+    assert.ok(find('.content-backdrop').getAttribute('style').indexOf('visibility: visible') > -1);
   });
 
-  test('should have opacity depended on menu opening progress', async function(assert) {
+  test('should have opacity depended on menu opening progress', async function (assert) {
     assert.expect(2);
 
-    this.set('sideMenu.progress', 40);
-    await render(hbs`{{content-backdrop}}`);
+    this.set('sideMenu.defaultMenu.progress', 40);
+    await render(hbs`<ContentBackdrop />`);
 
-    assert.ok(
-      find('.content-backdrop')
-        .getAttribute('style')
-        .indexOf('opacity: 0.4') > -1,
-      'opacity 0.4'
-    );
+    assert.ok(find('.content-backdrop').getAttribute('style').indexOf('opacity: 0.4') > -1, 'opacity 0.4');
 
-    this.set('sideMenu.progress', 70);
-    assert.ok(
-      find('.content-backdrop')
-        .getAttribute('style')
-        .indexOf('opacity: 0.7') > -1,
-      'opacity 0.7'
-    );
+    this.set('sideMenu.defaultMenu.progress', 70);
+    assert.ok(find('.content-backdrop').getAttribute('style').indexOf('opacity: 0.7') > -1, 'opacity 0.7');
   });
 
-  test('should work for multiple menus', async function(assert) {
+  test('should work for multiple menus', async function (assert) {
     assert.expect(4);
 
     await render(hbs`
-      {{#side-menu id="menu1" side="right"}}
+      <SideMenu @id="menu1" @side="right">
         Menu 1
-      {{/side-menu}}
-      {{#side-menu id="menu2" side="left"}}
+      </SideMenu>
+      <SideMenu @id="menu2" @side="right">
         Menu 2
-      {{/side-menu}}
-      {{content-backdrop class="backdrop1" menuId="menu1"}}
-      {{content-backdrop class="backdrop2" menuId="menu2"}}
+      </SideMenu>
+      <ContentBackdrop class="backdrop1" @menuId="menu1" />
+      <ContentBackdrop class="backdrop2" @menuId="menu2" />
     `);
 
     const backdrop1 = find('.content-backdrop.backdrop1');

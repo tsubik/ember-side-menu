@@ -1,63 +1,81 @@
-import { equal, oneWay, alias } from '@ember/object/computed';
-import EmberObject, { set, get } from '@ember/object';
 import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 
-const MenuObject = EmberObject.extend({
-  id: undefined,
-  progress: 0,
-  isOpen: equal('progress', 100),
-  isClosed: equal('progress', 0),
-  isSlightlyOpen: false
-});
+class MenuObject {
+  @tracked id;
+  @tracked progress = 0;
+  @tracked isSlightlyOpen = false;
+  get isOpen() {
+    return this.progress === 100;
+  }
+  get isClosed() {
+    return this.progress === 0;
+  }
 
-export default Service.extend({
+  constructor(id) {
+    this.id = id;
+  }
+}
+
+export default class SideMenuService extends Service {
   // backwards compability with having default menu without using menu ids
-  progress: alias('defaultMenu.progress'),
-  isSlightlyOpen: oneWay('defaultMenu.isSlightlyOpen'),
-  isOpen: oneWay('defaultMenu.isOpen'),
-  isClosed: oneWay('defaultMenu.isClosed'),
+  get progress() {
+    return this.defaultMenu.progress;
+  }
+  get isSlightlyOpen() {
+    return this.defaultMenu.isSlightlyOpen;
+  }
+  get isOpen() {
+    return this.defaultMenu.isOpen;
+  }
+  get isClosed() {
+    return this.defaultMenu.isClosed;
+  }
 
-  defaultMenu: oneWay('menus.default'),
+  get defaultMenu() {
+    return this.menus.default;
+  }
 
-  init() {
-    this._super(...arguments);
-    set(this, 'menus', { default: MenuObject.create({ id: 'default' }) });
-  },
+  constructor() {
+    super(...arguments);
+    this.menus = { default: new MenuObject('default') };
+  }
 
   create(menuId = 'default') {
-    const menus = get(this, 'menus');
-    const newMenu = MenuObject.create({ id: menuId });
+    const menus = this.menus;
+    const newMenu = new MenuObject(menuId);
     menus[menuId] = newMenu;
-    set(this, 'menus', Object.assign({}, menus));
+    this.menus = Object.assign({}, menus);
 
     return newMenu;
-  },
+  }
 
+  // eslint-disable-next-line ember/classic-decorator-hooks
   destroy(id = 'default') {
-    const menus = get(this, 'menus');
+    const menus = this.menus;
 
     delete menus[id];
-    set(this, 'menus', Object.assign({}, menus));
-  },
+    this.menus = Object.assign({}, menus);
+  }
 
   close(id = 'default') {
-    const menu = get(this, 'menus')[id];
-    set(menu, 'progress', 0);
-    set(menu, 'isSlightlyOpen', false);
-  },
+    const menu = this.menus[id];
+    menu.progress = 0;
+    menu.isSlightlyOpen = false;
+  }
 
   open(id = 'default') {
-    const menu = get(this, 'menus')[id];
-    set(menu, 'progress', 100);
-    set(menu, 'isSlightlyOpen', false);
-  },
+    const menu = this.menus[id];
+    menu.progress = 100;
+    menu.isSlightlyOpen = false;
+  }
 
   toggle(id = 'default') {
-    const menu = get(this, 'menus')[id];
-    if (get(menu, 'isOpen')) {
+    const menu = this.menus[id];
+    if (menu.isOpen) {
       this.close(id);
     } else {
       this.open(id);
     }
   }
-});
+}

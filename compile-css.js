@@ -1,4 +1,7 @@
-const sass = require('node-sass');
+'use strict';
+
+// eslint-disable-next-line node/no-unpublished-require
+const sass = require('sass');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +11,7 @@ const buf = fs.readFileSync(inputFile, 'utf8');
 
 // Compile main file
 const result = sass.renderSync({
-  data: buf
+  data: buf,
 });
 
 fs.writeFileSync(outputFile, result.css);
